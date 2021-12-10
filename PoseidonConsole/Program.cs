@@ -1,4 +1,5 @@
 ﻿using System;
+using PoseidonSharp;
 
 namespace PoseidonConsole
 {
@@ -6,8 +7,9 @@ namespace PoseidonConsole
     {
         static void Main(string[] args)
         {
-            Console.ReadKey()
-            Console.WriteLine("Hello World!");
+            Poseidon poseidon = new Poseidon(2,6,53,"POSEIDON",5, _securityTarget: 128);
+            Console.WriteLine("Enter to exit");
+            Console.ReadKey();
         }
     }
 }
