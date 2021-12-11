@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
+using Blake2Fast;
 
 namespace PoseidonSharp
 {
@@ -72,14 +74,65 @@ namespace PoseidonSharp
 
             if(_constantsC == null)
             {
-                constantsC = PoseidonConstants(SNARK_SCALAR_FIELD, _seed, _nRoundsF + _nRoundsP);
+                string constantsCseed = _seed + "_constants";
+                byte[] constantsCseedBytes = Encoding.ASCII.GetBytes(constantsCseed);
+                constantsC = CalculatePoseidonConstants(SNARK_SCALAR_FIELD, constantsCseedBytes, _nRoundsF + _nRoundsP);
             }
+
+            if(_constantsM == null)
+            {
+                string constantsMseed = _seed + "_constants";
+                byte[] constantsMseedBytes = Encoding.ASCII.GetBytes(constantsMseed);
+                constantsM = CalculatePoseidonMatrix(SNARK_SCALAR_FIELD, constantsMseedBytes, _t);
+            }
+
+            foreach (double number in constantsC)
+            {
+                Debug.WriteLine(number);
+            }
+
+            foreach (double number in constantsM)
+            {
+                Debug.WriteLine(number);
+            }
+            Debug.WriteLine($"Count Constants C: {constantsC.Count}");
+            Debug.WriteLine($"Count Constants M: {constantsM}");
+
+
         }
 
-        public List<double> PoseidonConstants(double p, string seed, int nRoundsPlusnRoundsP)
+        private List<double> CalculatePoseidonMatrix(double p, byte[] seed, int t)
         {
+            List<double> c = CalculatePoseidonConstants(p, seed, t * 2);
             List<double> returnValues = new List<double>();
+            for(int i = 0; i < t; i++)
+            {
+                for(int j= 0; j < t; j++)
+                {
+                    returnValues.Add(Math.Pow((c[i] - c[t + j]) % p, p - 2) % 2);
+                }
+            }
+            return returnValues;
+        }
+
+        public List<double> CalculatePoseidonConstants(double p, byte[] seed, int nRoundsPlusnRoundsP)
+        {
+            Debug.Assert(nRoundsPlusnRoundsP is int, "nRoundsPlusnRounds must be int");
+            List<double> returnValues = new List<double>();
+            byte[] tempSeed = seed;
+            for(int i = 0; i < nRoundsPlusnRoundsP; i++)
+            {
+                tempSeed = CalculateBlake2BHash(tempSeed);
+                returnValues.Add(BitConverter.ToDouble(tempSeed) % p);
+            }
+
             return returnValues;              
         }
+
+        public byte[] CalculateBlake2BHash(byte[] data)
+        {
+           return Blake2b.ComputeHash(32, data);
+        }
+
     }
 }
