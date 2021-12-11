@@ -93,7 +93,6 @@ namespace PoseidonSharp
                 Debug.Write(",");
             }
 
-            /*
             foreach(var list in constantsM)
             {
                 foreach(double number in list)
@@ -101,7 +100,6 @@ namespace PoseidonSharp
                     Debug.WriteLine(number);
                 }
             }
-            */
 
         }
         public BigInteger CalculateBlake2BHash(byte[] data)
@@ -142,10 +140,16 @@ namespace PoseidonSharp
             List<BigInteger> c = CalculatePoseidonConstants(p, seed, t * 2);
             List<List<BigInteger>> poseidonMatrix = new List<List<BigInteger>>();
 
-            for(int i = 0; i < t; i++)
+            for (int i = 0; i < t; i++)
             {
-
+                for (int j = 0; j < t; j++)
+                {
+                    List<BigInteger> bigIntegers = new List<BigInteger>();
+                    bigIntegers.Add(BigInteger.ModPow((c[i] - c[t + j]) % p, p - 2, p));
+                    poseidonMatrix.Add(bigIntegers);
+                }
             }
+            return poseidonMatrix;
         }
 
 
