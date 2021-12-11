@@ -112,17 +112,12 @@ namespace PoseidonSharp
             return new BigInteger(hash);
         }
 
-        private byte[] ConvertToPythonBytes(string data)
+        private List<BigInteger> CalculatePoseidonConstants(BigInteger p, byte[] seed, int nRounds)
         {
-            return new byte[] { 0};
-        }
-
-        private List<BigInteger> CalculatePoseidonConstants(BigInteger p, byte[] seed, int nRoundsPlusNRoundsP)
-        {
-            Debug.Assert(nRoundsPlusNRoundsP is int, "nRoundsPlusnRounds must be int");
+            Debug.Assert(nRounds is int, "nRounds must be int");
             List<BigInteger> poseidonConstants = new List<BigInteger>();
             BigInteger seedBigInt = new BigInteger();
-            for (int i = 0; i < nRoundsPlusNRoundsP; i++)
+            for (int i = 0; i < nRounds; i++)
             {
                 if (i == 0)
                 {
