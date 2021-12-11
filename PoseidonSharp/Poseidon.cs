@@ -144,8 +144,9 @@ namespace PoseidonSharp
                 for (int j = 0; j < t; j++)
                 {
                     bigIntegers.Add(BigInteger.ModPow((c[i] - c[t + j]) % p, p - 2, p));
-                    poseidonMatrix.Add(bigIntegers);
+                    
                 }
+                poseidonMatrix.Add(bigIntegers);
             }
             return poseidonMatrix;
         }
@@ -205,10 +206,11 @@ namespace PoseidonSharp
             {
                 for(int j = 0; j < originalState.Length; j++)
                 {
-                    resultsSum = BigInteger.Add(resultsSum, constantsM[i][j] * originalState[j]);
+                    BigInteger valuesMultiped = constantsM[i][j] * originalState[j];
+                    resultsSum = BigInteger.Add(resultsSum, valuesMultiped); 
                 }
                 BigInteger resultsSumModulus = resultsSum % SNARK_SCALAR_FIELD;
-                results[i] = resultsSumModulus;
+                results[i] = resultsSumModulus;   
                 resultsSum = BigInteger.Parse("0");
             }
 
