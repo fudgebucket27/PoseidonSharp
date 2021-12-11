@@ -141,10 +141,8 @@ namespace PoseidonSharp
             BigInteger seedBigInt = new BigInteger(seed);
             for (int i = 0; i < nRounds; i++)
             {
-
-                seedBigInt = CalculateBlake2BHash(seedBigInt);
-                
-                poseidonConstants.Add(seedBigInt % p);
+               seedBigInt = CalculateBlake2BHash(seedBigInt);                
+               poseidonConstants.Add(seedBigInt % p);
             }
             return poseidonConstants;
         }
