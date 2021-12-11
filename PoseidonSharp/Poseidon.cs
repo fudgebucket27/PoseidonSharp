@@ -109,12 +109,6 @@ namespace PoseidonSharp
             return positiveBigInt;
         }
 
-        private byte[] CalculateBlake2BHashTwo(byte[] data)
-        {
-            var hash = Blake2b.ComputeHash(32, data);
-            return hash;
-        }
-
         private List<BigInteger> CalculatePoseidonConstants(BigInteger p, byte[] seed, int nRounds)
         {
             Debug.Assert(nRounds is int, "nRounds must be int");
@@ -123,8 +117,7 @@ namespace PoseidonSharp
             for (int i = 0; i < nRounds; i++)
             {
                seedBigInt = CalculateBlake2BHash(seedBigInt);
-               seedBigInt = seedBigInt % p;
-               poseidonConstants.Add(seedBigInt);
+               poseidonConstants.Add(seedBigInt % p);
             }
             return poseidonConstants;
         }
