@@ -102,11 +102,25 @@ namespace PoseidonSharp
 
         private BigInteger CalculateBlake2BHash(BigInteger data)
         {
-            var hash = Blake2b.ComputeHash(32, data.ToByteArray());
-            var positiveHash = new byte[hash.Length + 1];
-            Array.Copy(hash, positiveHash, hash.Length);
-            BigInteger positiveBigInt = new BigInteger(positiveHash);
-            return positiveBigInt;
+            var sourceData = data.ToByteArray();
+            if (sourceData.Length < 32)
+            {
+                var hash = Blake2b.ComputeHash(32, sourceData);
+                var positiveHash = new byte[hash.Length + 1];
+                Array.Copy(hash, positiveHash, hash.Length);
+                BigInteger positiveBigInt = new BigInteger(positiveHash);
+                return positiveBigInt;
+            }
+            else
+            {
+                var truncated = new byte[32];
+                Array.Copy(sourceData, truncated, truncated.Length);
+                var hash = Blake2b.ComputeHash(32, truncated);
+                var positiveHash = new byte[hash.Length + 1];
+                Array.Copy(hash, positiveHash, hash.Length);
+                BigInteger positiveBigInt = new BigInteger(positiveHash);
+                return positiveBigInt;
+            }
         }
 
         private List<BigInteger> CalculatePoseidonConstants(BigInteger p, byte[] seed, int nRounds)
