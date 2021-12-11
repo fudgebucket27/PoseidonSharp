@@ -115,12 +115,6 @@ namespace PoseidonSharp
             return hash;
         }
 
-        private byte[] H(byte[] data)
-        {
-            var hash = Blake2b.ComputeHash(32, data);
-            return hash;
-        }
-
         private List<BigInteger> CalculatePoseidonConstants(BigInteger p, byte[] seed, int nRounds)
         {
             Debug.Assert(nRounds is int, "nRounds must be int");
