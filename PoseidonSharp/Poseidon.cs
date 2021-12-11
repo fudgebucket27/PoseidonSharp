@@ -147,20 +147,8 @@ namespace PoseidonSharp
                 for (int j = 0; j < t; j++)
                 {
                     BigInteger result = BigInteger.ModPow((constants[i] - constants[t + j]) % p, p - 2, p);
-                    var resultBytes = result.ToByteArray();
-
-                    if (resultBytes.Length < 32)
-                    {
-                        byte[] tempPosBytes = BitConverter.GetBytes(resultBytes);
-                        byte[] positiveBytes = new byte[tempPosBytes.Length + 1];
-                        Array.Copy(tempPosBytes, positiveBytes, tempPosBytes.Length);
-                        BigInteger positiveBigInt = new BigInteger(positiveBytes);
-                        bigIntegers.Add(positiveBigInt);
-                    }
-                    else //This part is working
-                    {
-                        bigIntegers.Add(result);
-                    }                                    
+                    bigIntegers.Add(result);
+                                                      
                 }
                 poseidonMatrix.Add(bigIntegers);
             }
