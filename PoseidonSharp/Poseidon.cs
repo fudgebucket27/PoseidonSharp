@@ -138,7 +138,7 @@ namespace PoseidonSharp
 
         private List<List<BigInteger>> CalculatePoseidonMatrix(BigInteger p, byte[] seed, int t)
         {
-            List<BigInteger> c = CalculatePoseidonConstants(p, seed, t * 2);
+            List<BigInteger> constants = CalculatePoseidonConstants(p, seed, t * 2);
             List<List<BigInteger>> poseidonMatrix = new List<List<BigInteger>>();
 
             for (int i = 0; i < t; i++)
@@ -146,7 +146,21 @@ namespace PoseidonSharp
                 List<BigInteger> bigIntegers = new List<BigInteger>();
                 for (int j = 0; j < t; j++)
                 {
-                    bigIntegers.Add(BigInteger.ModPow((c[i] - c[t + j]) % p, p - 2, p));                    
+                    BigInteger result = BigInteger.ModPow((constants[i] - constants[t + j]) % p, p - 2, p);
+                    var resultBytes = result.ToByteArray();
+
+                    if (resultBytes.Length < 32)
+                    {
+                        byte[] tempPosBytes = BitConverter.GetBytes(resultBytes);
+                        byte[] positiveBytes = new byte[tempPosBytes.Length + 1];
+                        Array.Copy(tempPosBytes, positiveBytes, tempPosBytes.Length);
+                        BigInteger positiveBigInt = new BigInteger(positiveBytes);
+                        bigIntegers.Add(positiveBigInt);
+                    }
+                    else //This part is working
+                    {
+                        bigIntegers.Add(result);
+                    }                                    
                 }
                 poseidonMatrix.Add(bigIntegers);
             }
