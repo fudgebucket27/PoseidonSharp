@@ -82,25 +82,26 @@ namespace PoseidonSharp
 
             if(_constantsM == null)
             {
-                string constantsMseed = _seed + "_constants";
+                string constantsMseed = _seed + "_matrix_0000";
                 byte[] constantsMseedBytes = Encoding.ASCII.GetBytes(constantsMseed);
-                //constantsM = CalculatePoseidonMatrix(SNARK_SCALAR_FIELD, constantsMseedBytes, _t);
+                constantsM = CalculatePoseidonMatrix(SNARK_SCALAR_FIELD, constantsMseedBytes, _t);
             }
 
-            foreach (double number in constantsC)
+            int nConstraints = (_nRoundsF * _t) + _nRoundsP;
+            if(_e == 5)
             {
-                Debug.Write(number);
-                Debug.Write(",");
+                nConstraints *= 3;
             }
-
-            foreach(var list in constantsM)
+            else if(_e == 3)
             {
-                foreach(double number in list)
-                {
-                    Debug.WriteLine(number);
-                }
+                nConstraints *= 2;
             }
 
+            t = _t;
+            nRoundsF = _nRoundsF;
+            nRoundsP = _nRoundsP;
+            seed = _seed;
+            e = _e;
         }
         public BigInteger CalculateBlake2BHash(byte[] data)
         {
@@ -142,19 +143,14 @@ namespace PoseidonSharp
 
             for (int i = 0; i < t; i++)
             {
+                List<BigInteger> bigIntegers = new List<BigInteger>();
                 for (int j = 0; j < t; j++)
                 {
-                    List<BigInteger> bigIntegers = new List<BigInteger>();
                     bigIntegers.Add(BigInteger.ModPow((c[i] - c[t + j]) % p, p - 2, p));
                     poseidonMatrix.Add(bigIntegers);
                 }
             }
             return poseidonMatrix;
         }
-
-
-
-
-
     }
 }
