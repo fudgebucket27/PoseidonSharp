@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,14 +13,14 @@ namespace PoseidonSharp
     {
         public BigInteger SNARK_SCALAR_FIELD = BigInteger.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
         public BigInteger FR_ORDER = BigInteger.Parse("21888242871839275222246405745257275088614511777268538073601725287587578984328");
-        public int t { get; set; }
-        public int nRoundsF { get; set; }
-        public int nRoundsP { get; set; }
-        public string seed { get; set; }
-        public int e { get; set; }
+        public int T { get; set; }
+        public int NRoundsF { get; set; }
+        public int NRoundsP { get; set; }
+        public string Seed { get; set; }
+        public int E { get; set; }
 
-        public List<BigInteger> constantsC { get; set; }
-        public List<List<BigInteger>> constantsM { get; set; }
+        public List<BigInteger> ConstantsC { get; set; }
+        public List<List<BigInteger>> ConstantsM { get; set; }
         public int securityTarget { get; set; }
 
         public Poseidon(int _t, int _nRoundsF, int _nRoundsP, string _seed, int _e, List<double> _constantsC = null, List<double> _constantsM = null, int _securityTarget = 0)
@@ -68,20 +69,25 @@ namespace PoseidonSharp
             Debug.Assert((_nRoundsF + _nRoundsP) > ((2 + Math.Min(M, n)) * grobnerAttackRatioRounds), "(nRoundsF + nRoundsP) > ((2 + min(M, n)) * grobner_attack_ratio_rounds)");
             Debug.Assert((_nRoundsF + (_t * _nRoundsP)) > (M * grobnerAttackRatioSBoxes), "(nRoundsF + (t * nRoundsP)) > (M * grobner_attack_ratio_sboxes)");
 
-
-
             if (_constantsC == null)
             {
                 string constantsCseed = _seed + "_constants";
-                byte[] constantsCseedBytes = Encoding.UTF8.GetBytes(constantsCseed);
-                constantsC = CalculatePoseidonConstants(SNARK_SCALAR_FIELD, constantsCseedBytes, _nRoundsF + _nRoundsP);
+                byte[] constantsCseedBytes = Encoding.ASCII.GetBytes(constantsCseed);
+                //ConstantsC = CalculatePoseidonConstants(SNARK_SCALAR_FIELD, constantsCseedBytes, _nRoundsF + _nRoundsP);
+                //ConstantsC = CalculatePoseidonConstantsTwo(SNARK_SCALAR_FIELD, constantsCseedBytes, _nRoundsF + _nRoundsP);
+                ConstantsC = new List<BigInteger>();
+                foreach(var constant in PConstants(SNARK_SCALAR_FIELD, constantsCseedBytes, _nRoundsF + _nRoundsP))
+                {
+                    ConstantsC.Add(constant);
+                }
+
             }
 
             if (_constantsM == null)
             {
                 string constantsMseed = _seed + "_matrix_0000";
-                byte[] constantsMseedBytes = Encoding.UTF8.GetBytes(constantsMseed);
-                constantsM = CalculatePoseidonMatrix(SNARK_SCALAR_FIELD, constantsMseedBytes, _t);
+                byte[] constantsMseedBytes = Encoding.ASCII.GetBytes(constantsMseed);
+                ConstantsM = CalculatePoseidonMatrix(SNARK_SCALAR_FIELD, constantsMseedBytes, _t);
             }
 
             int nConstraints = (_nRoundsF * _t) + _nRoundsP;
@@ -94,11 +100,11 @@ namespace PoseidonSharp
                 nConstraints *= 2;
             }
 
-            t = _t;
-            nRoundsF = _nRoundsF;
-            nRoundsP = _nRoundsP;
-            seed = _seed;
-            e = _e;
+            T = _t;
+            NRoundsF = _nRoundsF;
+            NRoundsP = _nRoundsP;
+            Seed = _seed;
+            E = _e;
         }
         private BigInteger CalculateBlake2BHash(byte[] data)
         {
@@ -110,6 +116,18 @@ namespace PoseidonSharp
         {
             var hash = Blake2b.ComputeHash(32, data.ToByteArray());
             return new BigInteger(hash);
+        }
+
+        private byte[] CalculateBlake2BHashTwo(byte[] data)
+        {
+            var hash = Blake2b.ComputeHash(32, data);
+            return hash;
+        }
+
+        private byte[] H(byte[] data)
+        {
+            var hash = Blake2b.ComputeHash(32, data);
+            return hash;
         }
 
         private List<BigInteger> CalculatePoseidonConstants(BigInteger p, byte[] seed, int nRounds)
@@ -130,6 +148,31 @@ namespace PoseidonSharp
                 poseidonConstants.Add(seedBigInt % p);
             }
             return poseidonConstants;
+        }
+
+        private List<BigInteger> CalculatePoseidonConstantsTwo(BigInteger p, byte[] seed, int nRounds)
+        {
+            Debug.Assert(nRounds is int, "nRounds must be int");
+            List<BigInteger> poseidonConstants = new List<BigInteger>();
+            BigInteger seedBigInt = new BigInteger();
+            for (int i = 0; i < nRounds; i++)
+            {
+                seed = CalculateBlake2BHashTwo(seed);             
+                poseidonConstants.Add(new BigInteger(seed) % p);
+            }
+            return poseidonConstants;
+        }
+
+        private IEnumerable<BigInteger> PConstants(BigInteger p, byte[] seed, int nRounds)
+        {
+            Debug.Assert(nRounds is int, "nRounds must be int");
+            foreach (var _ in Enumerable.Range(0, nRounds))
+            {
+                seed = H(seed);
+                BigInteger returnVal = new BigInteger(seed);
+                BigInteger returnValMod = BigInteger.Remainder(returnVal, p);
+                yield return returnValMod;
+            }
         }
 
         private List<List<BigInteger>> CalculatePoseidonMatrix(BigInteger p, byte[] seed, int t)
@@ -154,9 +197,9 @@ namespace PoseidonSharp
             Debug.Assert(inputs.Length > 0, "Inputs should be more than 0");
             if (!chained)
             {
-                Debug.Assert(inputs.Length < t, "Inputs should be less than t");
+                Debug.Assert(inputs.Length < T, "Inputs should be less than t");
             }
-            BigInteger[] state = new BigInteger[t];
+            BigInteger[] state = new BigInteger[T];
             Array.Fill(state, 0);
 
             for (int i = 0; i < inputs.Length; i++)
@@ -165,7 +208,7 @@ namespace PoseidonSharp
             }
 
             int k = 0;
-            foreach (BigInteger bigInt in constantsC)
+            foreach (BigInteger bigInt in ConstantsC)
             {
                 for (int i = 0; i < state.Length; i++)
                 {
@@ -180,18 +223,18 @@ namespace PoseidonSharp
 
         private BigInteger[] CalculatePoseidonSBox(BigInteger[] state, int i)
         {
-            int halfF = nRoundsF / 2;
+            int halfF = NRoundsF / 2;
 
-            if (i < halfF || i >= (halfF + nRoundsP))
+            if (i < halfF || i >= (halfF + NRoundsP))
             {
                 for(int j = 0; j < state.Length; j++)
                 {
-                    state[j] = BigInteger.ModPow(state[j], e, SNARK_SCALAR_FIELD);
+                    state[j] = BigInteger.ModPow(state[j], E, SNARK_SCALAR_FIELD);
                 }
             }
             else
             {
-                state[0] = BigInteger.ModPow(state[0], e, SNARK_SCALAR_FIELD);
+                state[0] = BigInteger.ModPow(state[0], E, SNARK_SCALAR_FIELD);
             }
             return state;
         }
@@ -200,11 +243,11 @@ namespace PoseidonSharp
         {
             BigInteger[] results = new BigInteger[originalState.Length];
             BigInteger resultsSum = BigInteger.Parse("0");
-            for(int i = 0; i < constantsM.Count; i++)
+            for(int i = 0; i < ConstantsM.Count; i++)
             {
                 for(int j = 0; j < originalState.Length; j++)
                 {
-                    BigInteger valuesMultiped = constantsM[i][j] * originalState[j];
+                    BigInteger valuesMultiped = ConstantsM[i][j] * originalState[j];
                     resultsSum = BigInteger.Add(resultsSum, valuesMultiped); 
                 }
                 BigInteger resultsSumModulus = resultsSum % SNARK_SCALAR_FIELD;
