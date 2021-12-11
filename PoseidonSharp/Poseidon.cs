@@ -23,7 +23,7 @@ namespace PoseidonSharp
         public List<List<BigInteger>> ConstantsM { get; set; }
         public int securityTarget { get; set; }
 
-        public Poseidon(int _t, int _nRoundsF, int _nRoundsP, string _seed, int _e, List<double> _constantsC = null, List<double> _constantsM = null, int _securityTarget = 0)
+        public Poseidon(int _t, int _nRoundsF, int _nRoundsP, string _seed, int _e, List<BigInteger> _constantsC = null, List<BigInteger> _constantsM = null, int _securityTarget = 0)
         {
             Debug.Assert(_nRoundsF % 2 == 0 && _nRoundsF > 0, "_nRoundsF needs to have modulus 2 of 0 and be more than 0");
             Debug.Assert(_nRoundsP > 0, "_nRoundsP needs to be more than 0");
@@ -73,13 +73,14 @@ namespace PoseidonSharp
             {
                 string constantsCseed = _seed + "_constants";
                 byte[] constantsCseedBytes = Encoding.ASCII.GetBytes(constantsCseed);
-                //ConstantsC = CalculatePoseidonConstants(SNARK_SCALAR_FIELD, constantsCseedBytes, _nRoundsF + _nRoundsP);
+                ConstantsC = CalculatePoseidonConstants(SNARK_SCALAR_FIELD, constantsCseedBytes, _nRoundsF + _nRoundsP);
                 //ConstantsC = CalculatePoseidonConstantsTwo(SNARK_SCALAR_FIELD, constantsCseedBytes, _nRoundsF + _nRoundsP);
+                /*
                 ConstantsC = new List<BigInteger>();
                 foreach(var constant in PConstants(SNARK_SCALAR_FIELD, constantsCseedBytes, _nRoundsF + _nRoundsP))
                 {
                     ConstantsC.Add(constant);
-                }
+                }*/
 
             }
 
