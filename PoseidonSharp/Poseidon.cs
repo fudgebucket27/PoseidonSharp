@@ -141,7 +141,6 @@ namespace PoseidonSharp
             List<BigInteger> constants = CalculatePoseidonConstants(p, seed, t * 2);
             List<List<BigInteger>> poseidonMatrix = new List<List<BigInteger>>();
             BigInteger two = BigInteger.Parse("2");
-            BigInteger negativeOne = BigInteger.Parse("-1");
             for (int i = 0; i < t; i++)
             {
                 List<BigInteger> bigIntegers = new List<BigInteger>();
