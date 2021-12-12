@@ -22,6 +22,14 @@ namespace PoseidonConsole
             Debug.Assert(testTwo == BigInteger.Parse("2838802984016459847807835899395446048073460738419316401120440074779237106208"), "Hash doesn't match expected hash!");
             Console.WriteLine($"Hash of test two is {testTwo}");
 
+            BigInteger[] inputsThree = { BigInteger.Parse("100000000"), BigInteger.Parse("222222222"), BigInteger.Parse("333333333333"), BigInteger.Parse("44444444444"), BigInteger.Parse("555555555") };
+            BigInteger testThree = poseidon.CalculatePoseidonHash(inputsThree);
+            Debug.Assert(testThree == BigInteger.Parse("17354009943050785237626458131489048161646600294932268224674589869465464194779"), "Hash doesn't match expected hash!");
+            Console.WriteLine($"Hash of test two is {testThree}");
+
+            Eddsa eddsa = new Eddsa(testOne, Environment.GetEnvironmentVariable("LoopringPrivateKey", EnvironmentVariableTarget.User));
+            eddsa.Sign();
+
             Console.WriteLine("Enter to exit");
             Console.ReadKey();
         }
