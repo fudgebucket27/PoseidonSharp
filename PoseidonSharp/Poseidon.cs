@@ -74,14 +74,6 @@ namespace PoseidonSharp
                 string constantsCseed = _seed + "_constants";
                 byte[] constantsCseedBytes = Encoding.ASCII.GetBytes(constantsCseed);
                 ConstantsC = CalculatePoseidonConstants(SNARK_SCALAR_FIELD, constantsCseedBytes, _nRoundsF + _nRoundsP);
-                //ConstantsC = CalculatePoseidonConstantsTwo(SNARK_SCALAR_FIELD, constantsCseedBytes, _nRoundsF + _nRoundsP);
-                /*
-                ConstantsC = new List<BigInteger>();
-                foreach(var constant in PConstants(SNARK_SCALAR_FIELD, constantsCseedBytes, _nRoundsF + _nRoundsP))
-                {
-                    ConstantsC.Add(constant);
-                }*/
-
             }
 
             if (_constantsM == null)
@@ -107,31 +99,28 @@ namespace PoseidonSharp
             Seed = _seed;
             E = _e;
         }
-        private BigInteger CalculateBlake2BHash(byte[] data)
-        {
-            var hash = Blake2b.ComputeHash(32, data);
-            return new BigInteger(hash);
-        }
 
         private BigInteger CalculateBlake2BHash(BigInteger data)
         {
-            var hash = Blake2b.ComputeHash(32, data.ToByteArray());
-            var positiveHash = new byte[hash.Length + 1];
-            Array.Copy(hash, positiveHash, hash.Length);
-            BigInteger positiveBigInt = new BigInteger(positiveHash);
-            return positiveBigInt;
-        }
-
-        private byte[] CalculateBlake2BHashTwo(byte[] data)
-        {
-            var hash = Blake2b.ComputeHash(32, data);
-            return hash;
-        }
-
-        private byte[] H(byte[] data)
-        {
-            var hash = Blake2b.ComputeHash(32, data);
-            return hash;
+            var sourceData = data.ToByteArray();
+            if (sourceData.Length <= 32)
+            {
+                var hash = Blake2b.ComputeHash(32, sourceData);
+                var positiveHash = new byte[hash.Length + 1];
+                Array.Copy(hash, positiveHash, hash.Length);
+                BigInteger positiveBigInt = new BigInteger(positiveHash);
+                return positiveBigInt;
+            }
+            else
+            {
+                var truncated = new byte[32];
+                Array.Copy(sourceData, truncated, truncated.Length);
+                var hash = Blake2b.ComputeHash(32, truncated);
+                var positiveHash = new byte[hash.Length + 1];
+                Array.Copy(hash, positiveHash, hash.Length);
+                BigInteger positiveBigInt = new BigInteger(positiveHash);
+                return positiveBigInt;
+            }
         }
 
         private List<BigInteger> CalculatePoseidonConstants(BigInteger p, byte[] seed, int nRounds)
@@ -141,48 +130,30 @@ namespace PoseidonSharp
             BigInteger seedBigInt = new BigInteger(seed);
             for (int i = 0; i < nRounds; i++)
             {
-               seedBigInt = CalculateBlake2BHash(seedBigInt);                
+               seedBigInt = CalculateBlake2BHash(seedBigInt);
                poseidonConstants.Add(seedBigInt % p);
             }
             return poseidonConstants;
         }
 
-        private List<BigInteger> CalculatePoseidonConstantsTwo(BigInteger p, byte[] seed, int nRounds)
-        {
-            Debug.Assert(nRounds is int, "nRounds must be int");
-            List<BigInteger> poseidonConstants = new List<BigInteger>();
-            BigInteger seedBigInt = new BigInteger();
-            for (int i = 0; i < nRounds; i++)
-            {
-                seed = CalculateBlake2BHashTwo(seed);             
-                poseidonConstants.Add(new BigInteger(seed) % p);
-            }
-            return poseidonConstants;
-        }
-
-        private IEnumerable<BigInteger> PConstants(BigInteger p, byte[] seed, int nRounds)
-        {
-            Debug.Assert(nRounds is int, "nRounds must be int");
-            foreach (var _ in Enumerable.Range(0, nRounds))
-            {
-                seed = H(seed);
-                BigInteger returnVal = new BigInteger(seed);
-                BigInteger returnValMod = BigInteger.Remainder(returnVal, p);
-                yield return returnValMod;
-            }
-        }
-
         private List<List<BigInteger>> CalculatePoseidonMatrix(BigInteger p, byte[] seed, int t)
         {
-            List<BigInteger> c = CalculatePoseidonConstants(p, seed, t * 2);
+            List<BigInteger> constants = CalculatePoseidonConstants(p, seed, t * 2);
             List<List<BigInteger>> poseidonMatrix = new List<List<BigInteger>>();
-
+            BigInteger two = BigInteger.Parse("2");
+            BigInteger negativeOne = BigInteger.Parse("-1");
             for (int i = 0; i < t; i++)
             {
                 List<BigInteger> bigIntegers = new List<BigInteger>();
                 for (int j = 0; j < t; j++)
                 {
-                    bigIntegers.Add(BigInteger.ModPow((c[i] - c[t + j]) % p, p - 2, p));                    
+
+                    BigInteger result = BigInteger.ModPow(constants[i] - constants[t+j] % p, p - two, p);
+                    if (result.Sign == -1)
+                    {
+                        result = result + p;
+                    }
+                    bigIntegers.Add(result);
                 }
                 poseidonMatrix.Add(bigIntegers);
             }
