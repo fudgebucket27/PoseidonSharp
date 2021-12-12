@@ -159,7 +159,7 @@ namespace PoseidonSharp
             return poseidonMatrix;
         }
 
-        public BigInteger CalculatePoseidonHash(int[] inputs, bool chained = false, bool trace = false)
+        public BigInteger CalculatePoseidonHash(BigInteger[] inputs, bool chained = false, bool trace = false)
         {
             Debug.Assert(inputs.Length > 0, "Inputs should be more than 0");
             if (!chained)
