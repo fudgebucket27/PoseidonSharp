@@ -21,7 +21,7 @@ namespace PoseidonSharp
 
         private List<BigInteger> ConstantsC { get; set; }
         private List<List<BigInteger>> ConstantsM { get; set; }
-        private int securityTarget { get; set; }
+        private int SecurityTarget { get; set; }
 
         public Poseidon(int _t, int _nRoundsF, int _nRoundsP, string _seed, int _e, List<BigInteger> _constantsC = null, List<BigInteger> _constantsM = null, int _securityTarget = 0)
         {
