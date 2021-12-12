@@ -103,7 +103,7 @@ namespace PoseidonSharp
         private BigInteger CalculateBlake2BHash(BigInteger data)
         {
             var sourceData = data.ToByteArray();
-            if (sourceData.Length <= 32)
+            if (sourceData.Length <= 32) //pad out bits
             {
                 var hash = Blake2b.ComputeHash(32, sourceData);
                 var positiveHash = new byte[hash.Length + 1];
@@ -111,7 +111,7 @@ namespace PoseidonSharp
                 BigInteger positiveBigInt = new BigInteger(positiveHash);
                 return positiveBigInt;
             }
-            else
+            else //truncate bits
             {
                 var truncated = new byte[32];
                 Array.Copy(sourceData, truncated, truncated.Length);
