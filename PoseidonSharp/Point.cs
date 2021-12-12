@@ -10,13 +10,13 @@ namespace PoseidonSharp
     public static class Point
     {
         private static BigInteger SNARK_SCALAR_FIELD = BigInteger.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
-        private static  (BigInteger, BigInteger) Generator()
+        public static  (BigInteger, BigInteger) Generator()
         {
             (BigInteger x, BigInteger y) points = (BigInteger.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), BigInteger.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
             return points;
         }
 
-        private static (BigInteger, BigInteger) Multiply(BigInteger scalar, (BigInteger x, BigInteger y) _points)
+        public static (BigInteger, BigInteger) Multiply(BigInteger scalar, (BigInteger x, BigInteger y) _points)
         {
             (BigInteger x, BigInteger y) p = ((BigInteger x, BigInteger y))_points;
             Debug.WriteLine($"p {p}");
