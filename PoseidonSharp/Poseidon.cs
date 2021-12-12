@@ -183,7 +183,18 @@ namespace PoseidonSharp
                 }
                 state = CalculatePoseidonSBox(state, k);
                 state = CalculatePoseidonMix(state);
-                k++;
+                if (trace == true)
+                {
+                    for (int j = 0; j < state.Length; j++)
+                    {
+                        Debug.WriteLine($"{k},{j} = {state[j]}");
+                    }
+                }
+                k++;            
+            }
+            if(chained == true)
+            {
+                //To do
             }
             return state[0];
         }
