@@ -1,7 +1,7 @@
 # PoseidonSharp
 Poseidon Library in C#, reference implementation was originally in python from https://github.com/Loopring/hello_loopring/blob/loopring-v3/tutorials/hash_and_sign/poseidon_hash_sample.py
 
-For use with the Loopring API
+For use with the C# Loopring API - https://github.com/taranasus/LoopringAPI
 
 Probably not production ready.. use at your own risk!
 
@@ -32,3 +32,5 @@ static void Main(string[] args)
   Console.ReadKey();
 }
 ```
+
+Fork this repo and do what you want with it! 
