@@ -11,17 +11,17 @@ namespace PoseidonSharp
 {
     public class Poseidon
     {
-        public BigInteger SNARK_SCALAR_FIELD = BigInteger.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
-        public BigInteger FR_ORDER = BigInteger.Parse("21888242871839275222246405745257275088614511777268538073601725287587578984328");
-        public int T { get; set; }
-        public int NRoundsF { get; set; }
-        public int NRoundsP { get; set; }
-        public string Seed { get; set; }
-        public int E { get; set; }
+        private BigInteger SNARK_SCALAR_FIELD = BigInteger.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
+        private BigInteger FR_ORDER = BigInteger.Parse("21888242871839275222246405745257275088614511777268538073601725287587578984328");
+        private int T { get; set; }
+        private int NRoundsF { get; set; }
+        private int NRoundsP { get; set; }
+        private string Seed { get; set; }
+        private int E { get; set; }
 
-        public List<BigInteger> ConstantsC { get; set; }
-        public List<List<BigInteger>> ConstantsM { get; set; }
-        public int securityTarget { get; set; }
+        private List<BigInteger> ConstantsC { get; set; }
+        private List<List<BigInteger>> ConstantsM { get; set; }
+        private int securityTarget { get; set; }
 
         public Poseidon(int _t, int _nRoundsF, int _nRoundsP, string _seed, int _e, List<BigInteger> _constantsC = null, List<BigInteger> _constantsM = null, int _securityTarget = 0)
         {
