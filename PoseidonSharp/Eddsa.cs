@@ -94,13 +94,19 @@ namespace PoseidonSharp
             var secretBytes = CalculateNumberOfBytes(k);
             var mBytes = CalculateNumberOfBytes(args);
             var combinedBytes = CombineBytes(secretBytes, mBytes); 
-            byte[] sha521Hash;
+            byte[] sha512Hash;
             SHA512 sha512 = new SHA512Managed();
-            sha521Hash = sha512.ComputeHash(combinedBytes);
+            sha512Hash = sha512.ComputeHash(combinedBytes);
 
-            BigInteger sha512Num = new BigInteger(sha521Hash);
+            BigInteger sha512Num = new BigInteger(sha512Hash);
+            if(sha512Num.Sign == -1)
+            {
+                string bigIntHex = "0" + sha512Num.ToString("x");
+                sha512Num = BigInteger.Parse(bigIntHex, NumberStyles.AllowHexSpecifier);
+            }
+
             BigInteger result = sha512Num %  JUBJUB_L;
-            if (result == -1)
+            if (result.Sign == -1)
             {
                 result = result + JUBJUB_L;
             }
