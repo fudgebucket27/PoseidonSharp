@@ -96,17 +96,30 @@ namespace PoseidonSharp
         private static BigInteger Multiply(BigInteger self, BigInteger other)
         {
             (BigInteger m, BigInteger n) points = FQ((self * other) % SNARK_SCALAR_FIELD, SNARK_SCALAR_FIELD);
+            if (points.n.Sign == -1)
+            {
+                points.n = points.n + SNARK_SCALAR_FIELD;
+            }
             return points.n;
         }
 
         private static (BigInteger m, BigInteger n) FQ(BigInteger n, BigInteger fieldModulus)
         {
-            return (fieldModulus, n % fieldModulus);
+            BigInteger nReturn = n % fieldModulus;
+            if (nReturn.Sign == -1)
+            {
+                nReturn = n + fieldModulus;
+            }
+            return (fieldModulus, nReturn);
         }
 
         private static BigInteger Add(BigInteger self, BigInteger other)
         {
             (BigInteger m, BigInteger n) points = FQ((self + other) % SNARK_SCALAR_FIELD, SNARK_SCALAR_FIELD);
+            if (points.n.Sign == -1)
+            {
+                points.n = points.n + SNARK_SCALAR_FIELD;
+            }
             return points.n;
         }
 
