@@ -52,12 +52,12 @@ namespace PoseidonSharp
 
             (BigInteger x, BigInteger y) R = Point.Multiply(r, B);
             Debug.WriteLine($"R: {R}");
-            
+
             BigInteger t = HashPublic(R, A, M);
             Debug.WriteLine($"t: {t}");
 
-
-
+            BigInteger S = (r + (key * t)) % JUBJUB_E;
+            Debug.WriteLine($"S: {S}");
         }
 
         private BigInteger HashPublic((BigInteger x, BigInteger y) r, (BigInteger x, BigInteger y) a, BigInteger m)
