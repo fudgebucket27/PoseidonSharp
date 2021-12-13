@@ -9,6 +9,7 @@ namespace PoseidonConsole
     {
         static void Main(string[] args)
         {
+            //Test case 1
             int MAX_INPUT = 1; //Max Input should be the number of BigInteger inputs
             Poseidon poseidon = new Poseidon(MAX_INPUT + 1,6,53,"poseidon",5, _securityTarget: 128);
             BigInteger[] inputs = { BigInteger.Parse("1000000000000000000000000") };
@@ -20,6 +21,7 @@ namespace PoseidonConsole
             Debug.Assert(signedMessage == "0x2055927e522e0e97e82bfb6195fd23e3163249d01411285d09760244e0c57ea1241952e4472ab3da5a95a6dc1d629c6eb2a12eee684a998fdb722b30be86a3eb260e7bf0d9849619d4859c79855ffb5c8611a35669630a5fe68e8b70e6875163", "Signed message doesn't match expected signed message");
             Console.WriteLine($"Signed message: {signedMessage}");
 
+            //Test case 2
             int MAX_INPUT_TWO = 4; //Max Input should be the number of BigInteger inputs
             Poseidon poseidonTwo = new Poseidon(MAX_INPUT_TWO + 1, 6, 53, "poseidon", 5, _securityTarget: 128);
             BigInteger[] inputsTwo = { BigInteger.Parse("1233333333333333"), BigInteger.Parse("9400000000000000000000000000"), BigInteger.Parse("1223123"), BigInteger.Parse("544343434343434343") };
