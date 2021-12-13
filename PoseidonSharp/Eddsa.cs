@@ -45,14 +45,26 @@ namespace PoseidonSharp
 
             BigInteger M = OriginalPoseidonHash;
             Debug.WriteLine($"M: {M}");
+           
             BigInteger key = PrivateKey;
             BigInteger r = HashSecret(key, M);
             Debug.WriteLine($"r: {r}");
 
             (BigInteger x, BigInteger y) R = Point.Multiply(r, B);
-
             Debug.WriteLine($"R: {R}");
+            
+            BigInteger t = HashPublic(R, A, M);
+            Debug.WriteLine($"t: {t}");
 
+
+
+        }
+
+        private BigInteger HashPublic((BigInteger x, BigInteger y) r, (BigInteger x, BigInteger y) a, BigInteger m)
+        {
+            BigInteger[] inputs = { r.x, r.y, a.x, a.y, m};
+            Poseidon poseidon = new Poseidon(6, 6, 52, "poseidon", 5, _securityTarget: 128);
+            return poseidon.CalculatePoseidonHash(inputs);
         }
 
         private BigInteger HashSecret(BigInteger k, BigInteger args)
