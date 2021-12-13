@@ -50,10 +50,10 @@ namespace PoseidonSharp
 
         private void HashSecret(BigInteger k, BigInteger args)
         {
-            var messageBytesBeforeSha512 = ToBytesMFQ(k, args);
+            var numberOfBytes = CalculateNumberOfBytes(k, args);
             byte[] result;
             SHA512 shaM = new SHA512Managed();
-            result = shaM.ComputeHash(messageBytesBeforeSha512);
+            result = shaM.ComputeHash(numberOfBytes);
 
             byte[] finalArray = new byte[result.Length + 1];
 
@@ -77,7 +77,7 @@ namespace PoseidonSharp
             Debug.WriteLine(sha512Num);
         }
 
-        private byte[] ToBytesMFQ(BigInteger self, BigInteger args)
+        private byte[] CalculateNumberOfBytes(BigInteger self, BigInteger args)
         {
             BigInteger nBits = (BigInteger)Math.Ceiling(BigInteger.Log(self, 2));
             nBits += 8 - (nBits % 8);
