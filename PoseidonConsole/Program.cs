@@ -32,7 +32,7 @@ namespace PoseidonConsole
             BigInteger[] inputsThree = { BigInteger.Parse("100000000"), BigInteger.Parse("222222222"), BigInteger.Parse("333333333333"), BigInteger.Parse("44444444444"), BigInteger.Parse("555555555") };
             BigInteger testThree = poseidon.CalculatePoseidonHash(inputsThree);
             Debug.Assert(testThree == BigInteger.Parse("17354009943050785237626458131489048161646600294932268224674589869465464194779"), "Hash doesn't match expected hash!");
-            Console.WriteLine($"Hash of test threeis {testThree}");
+            Console.WriteLine($"Hash of test three is {testThree}");
             
 
             BigInteger[] inputsFour = { BigInteger.Parse("9400000000000000000000000000") };
