@@ -44,7 +44,7 @@ namespace PoseidonSharp
             Debug.WriteLine($"A: {A}");
 
             Debug.WriteLine($"original poseidon hash: {OriginalPoseidonHash}");
-            BigInteger M = OriginalPoseidonHash;
+            BigInteger M = msg;
             Debug.WriteLine($"M: {M}");
            
             BigInteger key = PrivateKey;

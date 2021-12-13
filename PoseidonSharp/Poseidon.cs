@@ -208,11 +208,19 @@ namespace PoseidonSharp
                 for(int j = 0; j < state.Length; j++)
                 {
                     state[j] = BigInteger.ModPow(state[j], E, SNARK_SCALAR_FIELD);
+                    if(state[j].Sign == -1)
+                    {
+                        state[j] = state[j] + SNARK_SCALAR_FIELD;
+                    }
                 }
             }
             else
             {
                 state[0] = BigInteger.ModPow(state[0], E, SNARK_SCALAR_FIELD);
+                if (state[0].Sign == -1)
+                {
+                    state[0] = state[0] + SNARK_SCALAR_FIELD;
+                }
             }
             return state;
         }
@@ -229,6 +237,10 @@ namespace PoseidonSharp
                     resultsSum = BigInteger.Add(resultsSum, valuesMultiped); 
                 }
                 BigInteger resultsSumModulus = resultsSum % SNARK_SCALAR_FIELD;
+                if (resultsSumModulus.Sign == -1)
+                {
+                    resultsSumModulus = resultsSumModulus + SNARK_SCALAR_FIELD;
+                }
                 results[i] = resultsSumModulus;   
                 resultsSum = BigInteger.Parse("0");
             }
