@@ -27,7 +27,7 @@ namespace PoseidonSharp
             PrivateKey = BigInteger.Parse(_privateKey.Substring(2, _privateKey.Length - 2), NumberStyles.AllowHexSpecifier); ;
         }
 
-        public void Sign(object _points = null)
+        public string Sign(object _points = null)
         {
             (BigInteger x, BigInteger y) B;;
             if (_points != null)
@@ -62,6 +62,9 @@ namespace PoseidonSharp
             Signature signature = new Signature(R, S);
             SignedMessage signedMessage = new SignedMessage(A, signature, OriginalPoseidonHash);
             Debug.WriteLine(signedMessage);
+
+            string finalMessage = "0x" + signedMessage.Sig.R.x.ToString("x").Substring(2,62) + signedMessage.Sig.R.y.ToString("x").Substring(2, 62) + signedMessage.Sig.S.ToString("x").Substring(2, 62);
+            return finalMessage;
         }
 
 

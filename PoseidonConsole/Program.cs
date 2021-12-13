@@ -16,7 +16,11 @@ namespace PoseidonConsole
             BigInteger testOne = poseidon.CalculatePoseidonHash(inputs);
             Debug.Assert(testOne == BigInteger.Parse("14018714854885098128064817341184136022863799846023165041562300563859625887667"), "Hash doesn't match expected hash!");
             Console.WriteLine($"Hash of test one is {testOne}");
-            
+
+            Eddsa eddsa = new Eddsa(testOne, Environment.GetEnvironmentVariable("LoopringPrivateKey", EnvironmentVariableTarget.User));
+            string signedMessage = eddsa.Sign();
+            Debug.WriteLine($"Signed message: {signedMessage}");
+
             BigInteger[] inputsTwo = { BigInteger.Parse("1"), BigInteger.Parse("9400000000000000000000000000") };
             BigInteger testTwo = poseidon.CalculatePoseidonHash(inputsTwo);
             Debug.Assert(testTwo == BigInteger.Parse("2838802984016459847807835899395446048073460738419316401120440074779237106208"), "Hash doesn't match expected hash!");
@@ -27,8 +31,7 @@ namespace PoseidonConsole
             Debug.Assert(testThree == BigInteger.Parse("17354009943050785237626458131489048161646600294932268224674589869465464194779"), "Hash doesn't match expected hash!");
             Console.WriteLine($"Hash of test two is {testThree}");
 
-            Eddsa eddsa = new Eddsa(testOne, Environment.GetEnvironmentVariable("LoopringPrivateKey", EnvironmentVariableTarget.User));
-            eddsa.Sign();
+
 
             Console.WriteLine("Enter to exit");
             Console.ReadKey();
