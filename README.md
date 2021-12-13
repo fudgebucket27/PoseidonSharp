@@ -10,9 +10,9 @@ PoseidonConsole folder contains some demo code on how to use the library.
 
 # Important
 
-1. The private key for EDDSA is pulled from a user environment variable named "LoopringPrivateKey". The demo tests in PoseidonConsole will fail with the signing because they are using MY private key though.
+1. The private key for EDDSA is pulled from a user environment variable named "LoopringPrivateKey". It needs to be in a hex format, ie "0x1232blahblah" The demo tests in PoseidonConsole will fail with the signing because they are using MY private key though.
 
-2. The MAX_INPUT variable is important as you will get a different hash based on this value. Set it to the length of your BigInteger array inputs. So 3 elements would mean a MAX_INPUT of 3. We then also add 1 when passing the MAX_INPUT as the first parameter to the Poseidon class constructor.
+2. The MAX_INPUT variable is important as you will get a different poseidon hash based on this value. Set it to the length of your BigInteger array inputs. So 3 elements would mean a MAX_INPUT of 3. We then also add 1 when passing the MAX_INPUT as the first parameter to the Poseidon class constructor.
 
 ```csharp
 using System;
