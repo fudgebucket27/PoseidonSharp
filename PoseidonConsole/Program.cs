@@ -33,6 +33,32 @@ namespace PoseidonConsole
             Debug.Assert(signedMessageTwo == "0x0b60e3d275b059b7a7f485e8182b32de7d842090b828e0471aad2fee4ad1f58c246cb6d8b538fe9929993b44a86ea90f50bdd346db600c193e1a8c62340a6d871f5aa69ca257feea363ab9b55ca52372f1fcd404964f27c3bae07e5d8f46d53a", "Signed message doesn't match expected signed message");
             Console.WriteLine($"Signed message: {signedMessageTwo}");
 
+            //Test case 3
+            int MAX_INPUT_THREE = 13; //Max Input should be the number of BigInteger inputs
+            Poseidon poseidonThree = new Poseidon(MAX_INPUT_THREE + 1, 6, 53, "poseidon", 5, _securityTarget: 128);
+            BigInteger[] inputsThree = { 
+                BigInteger.Parse("1233333333333333"), 
+                BigInteger.Parse("9400000000000000000000000000"),
+                BigInteger.Parse("1223123"), 
+                BigInteger.Parse("544343434343434343"),
+                BigInteger.Parse("544343434343434343"),
+                BigInteger.Parse("544343434343434343"),
+                BigInteger.Parse("544343434343434343"),
+                BigInteger.Parse("544343434343434343"),
+                BigInteger.Parse("544343434343434343"),
+                BigInteger.Parse("544343434343434343"),
+                BigInteger.Parse("544343434343434343"),
+                BigInteger.Parse("544343434343434343"),
+                BigInteger.Parse("544343434343434343"),
+            };
+            BigInteger testThreePoseidonHash = poseidonThree.CalculatePoseidonHash(inputsThree);
+            Debug.Assert(testThreePoseidonHash == BigInteger.Parse("5672127111078700825511016759205848053541633732578151671665123112660080656153"), "Hash doesn't match expected hash!");
+            Console.WriteLine($"Hash of test six is {testThreePoseidonHash}");
+            Eddsa eddsaThree = new Eddsa(testThreePoseidonHash, Environment.GetEnvironmentVariable("LoopringPrivateKey", EnvironmentVariableTarget.User)); //Put in the calculated poseidon hash in order to Sign
+            string signedMessageThree = eddsaThree.Sign();
+            Debug.Assert(signedMessageThree == "0x152b971f5796226639add0a1572e348605a4291675fd10f7b8fa989057246e9815fc8e98e246ce212355d49fc4df5a0a6024ee3604164f3c2227b4380e9150c70427e5913a51bc85ead489ef28c97fe85aa399da0d37cb7ff845d511e44a2d50", "Signed message doesn't match expected signed message");
+            Console.WriteLine($"Signed message: {signedMessageThree}");
+
             Console.WriteLine("Enter to exit");
             Console.ReadKey();
         }
