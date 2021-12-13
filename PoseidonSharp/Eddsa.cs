@@ -67,13 +67,16 @@ namespace PoseidonSharp
 
             Signature signature = new Signature(R, S);
             SignedMessage signedMessage = new SignedMessage(A, signature, OriginalPoseidonHash);
-            Debug.WriteLine(signedMessage);
+ 
+            string rX = signedMessage.Sig.R.x.ToString("x").PadLeft(64,'0');
+            string rY = signedMessage.Sig.R.y.ToString("x").PadLeft(64, '0');
+            string rS = signedMessage.Sig.S.ToString("x").PadLeft(64, '0');
 
-            string x = signedMessage.Sig.R.x.ToString("x");
-            string y = signedMessage.Sig.R.y.ToString("x");
-            string s = signedMessage.Sig.S.ToString("x");
+            Debug.WriteLine(rX);
+            Debug.WriteLine(rY);
+            Debug.WriteLine(rS);
 
-            string finalMessage = "0x" +  signedMessage.Sig.R.x.ToString("x") + signedMessage.Sig.R.y.ToString("x") + signedMessage.Sig.S.ToString("x");
+            string finalMessage = "0x" + rX + rY + rS;
             return finalMessage;
         }
 
