@@ -23,8 +23,6 @@ using System.Diagnostics;
 using System.Numerics;
 using PoseidonSharp;
 
-# Demo Code
-
 static void Main(string[] args)
 {
   int MAX_INPUT = 1;
