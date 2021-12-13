@@ -32,8 +32,8 @@ static void Main(string[] args)
   
   //Test case 1
   BigInteger[] inputs = { BigInteger.Parse("1") };//Max Input should be the number of BigInteger inputs
-  BigInteger testOne = poseidon.CalculatePoseidonHash(inputs);
-  Debug.Assert(testOne == BigInteger.Parse("11316722965829087614032985243432266723826890185209218714357779037968059437034"), "Hash doesn't match expected hash!");
+  BigInteger testOnePoseidonHash = poseidon.CalculatePoseidonHash(inputs);
+  Debug.Assert(testOnePoseidonHash == BigInteger.Parse("11316722965829087614032985243432266723826890185209218714357779037968059437034"), "Hash doesn't match expected hash!");
   Console.WriteLine($"Hash of test one is {testOne}");
   Eddsa eddsa = new Eddsa(testOne, Environment.GetEnvironmentVariable("LoopringPrivateKey", EnvironmentVariableTarget.User)); //Put in the calculated poseidon hash in order to Sign
   string signedMessage = eddsa.Sign();
