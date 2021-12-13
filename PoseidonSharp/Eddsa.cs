@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
@@ -15,7 +16,9 @@ namespace PoseidonSharp
 
         private static BigInteger JUBJUB_E = BigInteger.Parse("21888242871839275222246405745257275088614511777268538073601725287587578984328");
         private static BigInteger JUBJUB_C = BigInteger.Parse("8");
-        private static double JUBJUB_L = Math.Floor((double)(JUBJUB_E / JUBJUB_C));
+        //private static double JUBJUB_L = Math.Floor((double)(JUBJUB_E / JUBJUB_C));
+
+        private static BigInteger JUBJUB_L = BigInteger.DivRem(JUBJUB_E, JUBJUB_C, out JUBJUB_L);
 
 
         public Eddsa(BigInteger _originalPoseidonHash, string _privateKey)
@@ -43,48 +46,42 @@ namespace PoseidonSharp
             BigInteger M = OriginalPoseidonHash;
             Debug.WriteLine($"M: {M}");
             BigInteger key = PrivateKey;
+            BigInteger r = HashSecret(key, M);
+            Debug.WriteLine($"r: {r}");
 
-            HashSecret(key, M);
+            (BigInteger x, BigInteger y) R = Point.Multiply(r, B);
+
+            Debug.WriteLine($"R: {R}");
 
         }
 
-        private void HashSecret(BigInteger k, BigInteger args)
+        private BigInteger HashSecret(BigInteger k, BigInteger args)
         {
-            var numberOfBytes = CalculateNumberOfBytes(k, args);
-            byte[] result;
-            SHA512 shaM = new SHA512Managed();
-            result = shaM.ComputeHash(numberOfBytes);
+            var secretBytes = CalculateNumberOfBytes(k);
+            var mBytes = CalculateNumberOfBytes(args);
+            var combinedBytes = CombineBytes(secretBytes, mBytes); 
+            byte[] sha521Hash;
+            SHA512 sha512 = new SHA512Managed();
+            sha521Hash = sha512.ComputeHash(combinedBytes);
 
-            byte[] finalArray = new byte[result.Length + 1];
-
-            for (int i = 0; i < finalArray.Length; i++)
-            {
-                if (i == 0)
-                {
-                    //
-                }
-                else if (i == result.Length)
-                {
-                    //
-                }
-                else
-                {
-                    finalArray[i] = result[i];
-                }
-            }
-
-            BigInteger sha512Num = new BigInteger(finalArray);
-            Debug.WriteLine(sha512Num);
+            BigInteger sha512Num = new BigInteger(sha521Hash);
+            BigInteger result = sha512Num % (BigInteger) JUBJUB_L;
+            return result;
         }
 
-        private byte[] CalculateNumberOfBytes(BigInteger self, BigInteger args)
+        private byte[] CalculateNumberOfBytes(BigInteger self)
         {
             BigInteger nBits = (BigInteger)Math.Ceiling(BigInteger.Log(self, 2));
             nBits += 8 - (nBits % 8);
             BigInteger nBytes = new BigInteger();
             nBytes = BigInteger.DivRem(nBits, 8, out nBytes);
-            Debug.WriteLine(nBytes);
-            return nBytes.ToByteArray();
+            return self.ToByteArray();
         }
+
+        public static byte[] CombineBytes(byte[] first, byte[] second)
+        {
+            return first.Concat(second).ToArray();
+        }
+
     }
 }
