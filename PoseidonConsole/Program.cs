@@ -9,7 +9,7 @@ namespace PoseidonConsole
     {
         static void Main(string[] args)
         {
-            int MAX_INPUT = 13;
+            int MAX_INPUT = 13; //Max Input should be the number of inputs
          
             Poseidon poseidon = new Poseidon(MAX_INPUT + 1,6,53,"poseidon",5, _securityTarget: 128);
 
