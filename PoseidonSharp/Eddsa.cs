@@ -99,7 +99,12 @@ namespace PoseidonSharp
             sha521Hash = sha512.ComputeHash(combinedBytes);
 
             BigInteger sha512Num = new BigInteger(sha521Hash);
-            BigInteger result = sha512Num % (BigInteger) JUBJUB_L;
+            BigInteger result = sha512Num %  JUBJUB_L;
+            if (result == -1)
+            {
+                result = result + JUBJUB_L;
+            }
+
             return result;
         }
 
