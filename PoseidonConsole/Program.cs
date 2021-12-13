@@ -10,9 +10,11 @@ namespace PoseidonConsole
         static void Main(string[] args)
         {
             int MAX_INPUT = 13;
-            BigInteger[] inputs = {BigInteger.Parse("1")};
+         
             Poseidon poseidon = new Poseidon(MAX_INPUT + 1,6,53,"poseidon",5, _securityTarget: 128);
-            
+
+           
+            BigInteger[] inputs = { BigInteger.Parse("1") };
             BigInteger testOne = poseidon.CalculatePoseidonHash(inputs);
             Debug.Assert(testOne == BigInteger.Parse("14018714854885098128064817341184136022863799846023165041562300563859625887667"), "Hash doesn't match expected hash!");
             Console.WriteLine($"Hash of test one is {testOne}");
@@ -41,6 +43,7 @@ namespace PoseidonConsole
             string signedMessageTwo = eddsaTwo.Sign();
             Debug.Assert(signedMessageTwo == "0x303e00dea504bd28fbd08006cd6d34d4eb54f7fcfac4b3e6988af7a9f87349de02da19ee8e3b35efc0b6bf67b9636b1b0142ace2b637e6cace4bf1bc59872099220db0a7abc87bf912ec0ed70c799516ceb0470500c96f0c3ce0376f7ff133e5", "Signed message doesn't match expected signed message");
             Console.WriteLine($"Signed message: {signedMessageTwo}");
+            
            
 
             BigInteger[] inputsFive = { BigInteger.Parse("1233333333333333"), BigInteger.Parse("9400000000000000000000000000") };
