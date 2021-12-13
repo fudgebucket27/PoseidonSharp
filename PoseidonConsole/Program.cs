@@ -56,6 +56,16 @@ namespace PoseidonConsole
             Console.WriteLine($"Signed message: {signedMessageThree}");
 
 
+            BigInteger[] inputsSix = { BigInteger.Parse("1233333333333333"), BigInteger.Parse("9400000000000000000000000000"), BigInteger.Parse("1223123"), BigInteger.Parse("544343434343434343") };
+            BigInteger testSix = poseidon.CalculatePoseidonHash(inputsSix);
+            Debug.Assert(testSix == BigInteger.Parse("1655729201495378821295527525575308339135123068455866978713071881795957281232"), "Hash doesn't match expected hash!");
+            Console.WriteLine($"Hash of test six is {testSix}");
+            Eddsa eddsaFour = new Eddsa(testSix, Environment.GetEnvironmentVariable("LoopringPrivateKey", EnvironmentVariableTarget.User)); //Put in the calculated poseidon hash in order to Sign
+            string signedMessageFour = eddsaFour.Sign();
+            Debug.Assert(signedMessageFour == "0x2b4ee90770a2df74db0715eaa972661231e8c0dd31c4304fd1d7bb63c01e41f62dfb7db543e3a6f8db46389aaea2719873b84d169ffe4d1e4a5bd0f3951ef9683037da020de65862a55330dd3935bcd91ee726462ea48700af83470920f4b1ef", "Signed message doesn't match expected signed message");
+            Console.WriteLine($"Signed message: {signedMessageFour}");
+
+
 
             Console.WriteLine("Enter to exit");
             Console.ReadKey();
