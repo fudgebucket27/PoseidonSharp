@@ -1,4 +1,5 @@
 # PoseidonSharp
+# Intro
 Poseidon Library in C#, reference implementation was originally in python from https://github.com/Loopring/hello_loopring/blob/loopring-v3/tutorials/hash_and_sign/poseidon_hash_sample.py
 
 For use with the C# Loopring API - https://github.com/taranasus/LoopringAPI
@@ -7,7 +8,12 @@ Probably not production ready.. use at your own risk!
 
 PoseidonConsole folder contains some demo code on how to use the library.
 
-The private key for EDDSA is pulled from a user environment variable named "LoopringPrivateKey". The demo tests in PoseidonConsole will fail with the signing because they are using MY private key though.
+# Important
+
+1. The private key for EDDSA is pulled from a user environment variable named "LoopringPrivateKey". The demo tests in PoseidonConsole will fail with the signing because they are using MY private key though.
+
+2. The MAX_INPUT variable is important as you will get a different hash based on this value. Set it to the length of your BigInteger array inputs. So 3 elements would mean a MAX_INPUT of 3. We then also add 1 when passing the MAX_INPUT as the first parameter to the Poseidon class.
+
 ```csharp
 using System;
 using System.Diagnostics;
