@@ -11,9 +11,9 @@ namespace PoseidonSharp
         public BigInteger S { get; set; }
         public Signature((BigInteger x, BigInteger y) _r, BigInteger _s)
         {
-            R.x = _r.y;
-            R.y = _s;
-            S = _r.x;
+            R.x = _r.x;
+            R.y = _r.y;
+            S = _s;
         }
     }
 }

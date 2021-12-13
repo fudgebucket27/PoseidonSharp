@@ -43,6 +43,7 @@ namespace PoseidonSharp
             (BigInteger x, BigInteger y) A = Point.Multiply(PrivateKey, B);
             Debug.WriteLine($"A: {A}");
 
+            Debug.WriteLine($"original poseidon hash: {OriginalPoseidonHash}");
             BigInteger M = OriginalPoseidonHash;
             Debug.WriteLine($"M: {M}");
            
@@ -57,17 +58,22 @@ namespace PoseidonSharp
             Debug.WriteLine($"t: {t}");
 
             BigInteger S = (r + (key * t)) % JUBJUB_E;
+            if (S.Sign == -1)
+            {
+                S = S + JUBJUB_E;
+            }
+
             Debug.WriteLine($"S: {S}");
 
             Signature signature = new Signature(R, S);
             SignedMessage signedMessage = new SignedMessage(A, signature, OriginalPoseidonHash);
             Debug.WriteLine(signedMessage);
 
-            string t1 = signedMessage.Sig.R.x.ToString("x");
-            string t2 = signedMessage.Sig.R.y.ToString("x");
-            string t3 = signedMessage.Sig.S.ToString("x");
+            string x = signedMessage.Sig.R.x.ToString("x");
+            string y = signedMessage.Sig.R.y.ToString("x");
+            string s = signedMessage.Sig.S.ToString("x");
 
-            string finalMessage = "0x" + signedMessage.Sig.S.ToString("x") + signedMessage.Sig.R.x.ToString("x") + signedMessage.Sig.R.y.ToString("x");
+            string finalMessage = "0x" +  signedMessage.Sig.R.x.ToString("x") + signedMessage.Sig.R.y.ToString("x") + signedMessage.Sig.S.ToString("x");
             return finalMessage;
         }
 
