@@ -7,7 +7,7 @@ Probably not production ready.. use at your own risk!
 
 PoseidonConsole folder contains some demo code on how to use the library.
 
-The private key for EDDSA is pulled from a user environment variable named "LoopringPrivateKey". The demo tests in PoseidonConsole will fail because they are using MY private key though.
+The private key for EDDSA is pulled from a user environment variable named "LoopringPrivateKey". The demo tests in PoseidonConsole will fail with the signing because they are using MY private key though.
 ```csharp
 using System;
 using System.Diagnostics;
