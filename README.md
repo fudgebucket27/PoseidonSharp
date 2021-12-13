@@ -7,6 +7,8 @@ Probably not production ready.. use at your own risk!
 
 PoseidonConsole folder contains some demo code on how to use the library.
 
+The private key for EDDSA is pulled from a user environment variable named "LoopringPrivateKey"
+
 ```csharp
 using System;
 using System.Diagnostics;
