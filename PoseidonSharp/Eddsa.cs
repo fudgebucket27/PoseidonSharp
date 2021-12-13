@@ -101,7 +101,8 @@ namespace PoseidonSharp
             BigInteger sha512Num = new BigInteger(sha512Hash);
             if(sha512Num.Sign == -1)
             {
-                //
+                string bigIntHex = "0" + sha512Num.ToString("x");
+                sha512Num = BigInteger.Parse(bigIntHex, NumberStyles.AllowHexSpecifier);
             }
 
             BigInteger result = sha512Num %  JUBJUB_L;
