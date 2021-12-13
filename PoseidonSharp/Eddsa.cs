@@ -58,7 +58,13 @@ namespace PoseidonSharp
 
             BigInteger S = (r + (key * t)) % JUBJUB_E;
             Debug.WriteLine($"S: {S}");
+
+            Signature signature = new Signature(R, S);
+            SignedMessage signedMessage = new SignedMessage(A, signature, OriginalPoseidonHash);
+            Debug.WriteLine(signedMessage);
         }
+
+
 
         private BigInteger HashPublic((BigInteger x, BigInteger y) r, (BigInteger x, BigInteger y) a, BigInteger m)
         {
