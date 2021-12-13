@@ -31,7 +31,7 @@ static void Main(string[] args)
   Poseidon poseidon = new Poseidon(MAX_INPUT + 1,6,53,"poseidon",5, _securityTarget: 128); //Initiate new poseidon
   
   //Test case 1
-  BigInteger[] inputs = { BigInteger.Parse("1") };
+  BigInteger[] inputs = { BigInteger.Parse("1") };//Max Input should be the number of BigInteger inputs
   BigInteger testOne = poseidon.CalculatePoseidonHash(inputs);
   Debug.Assert(testOne == BigInteger.Parse("11316722965829087614032985243432266723826890185209218714357779037968059437034"), "Hash doesn't match expected hash!");
   Console.WriteLine($"Hash of test one is {testOne}");
