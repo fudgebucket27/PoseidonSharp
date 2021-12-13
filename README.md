@@ -2,9 +2,9 @@
 ## Intro
 This is mainly for use with the (unofficial) C# Loopring API - https://github.com/taranasus/LoopringAPI
 
-Poseidon Library in C#, reference implementation was originally in python from https://github.com/Loopring/hello_loopring/blob/loopring-v3/tutorials/hash_and_sign/poseidon_hash_sample.py
+This is a Poseidon Hashing Library in C#, the reference implementation was originally in python from https://github.com/Loopring/hello_loopring/blob/loopring-v3/tutorials/hash_and_sign/poseidon_hash_sample.py
 
-Probably not production ready.. so use at your own risk!
+This is probably not production ready...so use at your own risk!
 
 The included PoseidonConsole project contains some demo code on how to use the library.
 
