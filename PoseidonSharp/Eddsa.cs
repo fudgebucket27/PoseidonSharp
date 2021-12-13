@@ -63,7 +63,11 @@ namespace PoseidonSharp
             SignedMessage signedMessage = new SignedMessage(A, signature, OriginalPoseidonHash);
             Debug.WriteLine(signedMessage);
 
-            string finalMessage = "0x" + signedMessage.Sig.R.x.ToString("x").Substring(2,62) + signedMessage.Sig.R.y.ToString("x").Substring(2, 62) + signedMessage.Sig.S.ToString("x").Substring(2, 62);
+            string t1 = signedMessage.Sig.R.x.ToString("x");
+            string t2 = signedMessage.Sig.R.y.ToString("x");
+            string t3 = signedMessage.Sig.S.ToString("x");
+
+            string finalMessage = "0x" + signedMessage.Sig.S.ToString("x") + signedMessage.Sig.R.x.ToString("x") + signedMessage.Sig.R.y.ToString("x");
             return finalMessage;
         }
 
