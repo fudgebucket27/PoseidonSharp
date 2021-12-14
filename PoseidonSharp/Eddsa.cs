@@ -16,8 +16,6 @@ namespace PoseidonSharp
 
         private static BigInteger JUBJUB_E = BigInteger.Parse("21888242871839275222246405745257275088614511777268538073601725287587578984328");
         private static BigInteger JUBJUB_C = BigInteger.Parse("8");
-        //private static double JUBJUB_L = Math.Floor((double)(JUBJUB_E / JUBJUB_C));
-
         private static BigInteger JUBJUB_L = BigInteger.DivRem(JUBJUB_E, JUBJUB_C, out JUBJUB_L);
 
 
