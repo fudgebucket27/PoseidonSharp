@@ -12,13 +12,13 @@ namespace PoseidonConsole
             //Test case 1
             int MAX_INPUT = 1; //Max Input should be the number of BigInteger inputs
             Poseidon poseidon = new Poseidon(MAX_INPUT + 1,6,53,"poseidon",5, _securityTarget: 128);
-            BigInteger[] inputs = { BigInteger.Parse("1000000000000000000000000") };
+            BigInteger[] inputs = { BigInteger.Parse("19400808358061590369279192378878962429412529891699423035130831734199348072763") };
             BigInteger testOnePoseidonHash = poseidon.CalculatePoseidonHash(inputs);
-            Debug.Assert(testOnePoseidonHash == BigInteger.Parse("13920778905481904875716139411632478880020197875852667364732802355887164497753"), "Hash doesn't match expected hash!");
+            Debug.Assert(testOnePoseidonHash == BigInteger.Parse("19254303773071461417973161554248988464997154230097311673556244912844777390355"), "Hash doesn't match expected hash!");
             Console.WriteLine($"Hash of test one is {testOnePoseidonHash}");
             Eddsa eddsa = new Eddsa(testOnePoseidonHash, Environment.GetEnvironmentVariable("LoopringPrivateKey", EnvironmentVariableTarget.User)); //Put in the calculated poseidon hash in order to Sign
             string signedMessage = eddsa.Sign();
-            Debug.Assert(signedMessage == "0x2055927e522e0e97e82bfb6195fd23e3163249d01411285d09760244e0c57ea1241952e4472ab3da5a95a6dc1d629c6eb2a12eee684a998fdb722b30be86a3eb260e7bf0d9849619d4859c79855ffb5c8611a35669630a5fe68e8b70e6875163", "Signed message doesn't match expected signed message");
+            Debug.Assert(signedMessage == "0x19bdf78654e45f513e3d983c4fa0f90c222ffb37ff1772d6955961f8f414d8f32945dea53a2d12bdcab3a5facaa695503e73608ed75988bfe0df9ae8413bab022e070e3025a288e70f6305e9c44f51480ddc712d8be59870ad0acfdcce9aaa05", "Signed message doesn't match expected signed message");
             Console.WriteLine($"Signed message: {signedMessage}");
 
             //Test case 2
