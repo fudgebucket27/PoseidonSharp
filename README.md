@@ -49,9 +49,7 @@ static void Main(string[] args)
   string signedMessageTwo = eddsaTwo.Sign();
   Debug.Assert(signedMessageTwo == "0x0b60e3d275b059b7a7f485e8182b32de7d842090b828e0471aad2fee4ad1f58c246cb6d8b538fe9929993b44a86ea90f50bdd346db600c193e1a8c62340a6d871f5aa69ca257feea363ab9b55ca52372f1fcd404964f27c3bae07e5d8f46d53a", "Signed message doesn't match expected signed message");
   Console.WriteLine($"Signed message: {signedMessageTwo}");
-  
-  Console.WriteLine("Enter to exit");
-  Console.ReadKey();
+
   
   //Test case for signed message of get api key url
   //Calculate sha256 specific to loopring of url
@@ -62,6 +60,9 @@ static void Main(string[] args)
   string signedMessage = eddsa.Sign();
   Debug.Assert(signedMessage == "0x02cd51ee31c9d63e6d9796704249fbccaba8fd287e4c7d412bc4d6d88801bb0a067de03f99a1a1194a098522e686a1940024946535d45cbbd02b3bb38722d9f02fa6e5be861a24168738837e7b7f38e4379b26a54a60673afde303e75f47b769", "Signed message doesn't match expected signed message");
   Console.WriteLine($"Signed message: {signedMessage}");
+  
+  Console.WriteLine("Enter to exit");
+  Console.ReadKey();
 }
 ```
 
