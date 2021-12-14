@@ -1,18 +1,43 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Numerics;
+using System.Security.Cryptography;
+using System.Text;
 using PoseidonSharp;
 
 namespace PoseidonConsole
 {
     class Program
     {
+        public static BigInteger SNARK_SCALAR_FIELD = BigInteger.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
         static void Main(string[] args)
         {
             //Test case 1
+            //GET API KEY TEST
+            byte[] urlBytes = Encoding.UTF8.GetBytes("GET&https%3A%2F%2Fuat3.loopring.io%2Fapi%2Fv3%2FapiKey&accountId%3D11087");
+            SHA256Managed sha256Managed = new SHA256Managed();
+            byte[] sha256HashBytes = sha256Managed.ComputeHash(urlBytes);
+            string sha256HashString = string.Empty;
+            foreach (byte x in sha256HashBytes)
+            {
+                sha256HashString += String.Format("{0:x2}", x);
+            }
+            BigInteger sha256HashNumber = BigInteger.Parse(sha256HashString, NumberStyles.AllowHexSpecifier);
+            if (sha256HashNumber.Sign == -1)
+            {
+                string bigIntHex = "0" + sha256HashNumber.ToString("x2");
+                sha256HashNumber = BigInteger.Parse(bigIntHex, NumberStyles.AllowHexSpecifier);
+            }
+            BigInteger inputOne = sha256HashNumber % SNARK_SCALAR_FIELD;
+            if (inputOne.Sign == -1)
+            {
+                inputOne = inputOne + SNARK_SCALAR_FIELD;
+            }
+
             int MAX_INPUT = 1; //Max Input should be the number of BigInteger inputs
             Poseidon poseidon = new Poseidon(MAX_INPUT + 1,6,53,"poseidon",5, _securityTarget: 128);
-            BigInteger[] inputs = { BigInteger.Parse("19400808358061590369279192378878962429412529891699423035130831734199348072763") };
+            BigInteger[] inputs = { inputOne };
             BigInteger testOnePoseidonHash = poseidon.CalculatePoseidonHash(inputs);
             Debug.Assert(testOnePoseidonHash == BigInteger.Parse("19254303773071461417973161554248988464997154230097311673556244912844777390355"), "Hash doesn't match expected hash!");
             Console.WriteLine($"Hash of test one is {testOnePoseidonHash}");
