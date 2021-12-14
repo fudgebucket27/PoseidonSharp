@@ -60,7 +60,6 @@ namespace PoseidonConsole
             string signedMessageThree = eddsaThree.Sign();
             Debug.Assert(signedMessageThree == "0x152b971f5796226639add0a1572e348605a4291675fd10f7b8fa989057246e9815fc8e98e246ce212355d49fc4df5a0a6024ee3604164f3c2227b4380e9150c70427e5913a51bc85ead489ef28c97fe85aa399da0d37cb7ff845d511e44a2d50", "Signed message doesn't match expected signed message");
             Console.WriteLine($"Signed message: {signedMessageThree}");
-            */
 
             Console.WriteLine("Enter to exit");
             Console.ReadKey();
