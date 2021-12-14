@@ -14,7 +14,7 @@ namespace PoseidonConsole
         static void Main(string[] args)
         {
             //Test case 1
-            //GET API KEY TEST
+            //Calculate sha256 of url
             byte[] urlBytes = Encoding.UTF8.GetBytes("GET&https%3A%2F%2Fuat3.loopring.io%2Fapi%2Fv3%2FapiKey&accountId%3D11087");
             SHA256Managed sha256Managed = new SHA256Managed();
             byte[] sha256HashBytes = sha256Managed.ComputeHash(urlBytes);
@@ -34,6 +34,9 @@ namespace PoseidonConsole
             {
                 inputOne = inputOne + SNARK_SCALAR_FIELD;
             }
+
+            Debug.Assert(inputOne == BigInteger.Parse("19400808358061590369279192378878962429412529891699423035130831734199348072763"), "Hash doesn't match expected hash!");
+
 
             int MAX_INPUT = 1; //Max Input should be the number of BigInteger inputs
             Poseidon poseidon = new Poseidon(MAX_INPUT + 1,6,53,"poseidon",5, _securityTarget: 128);
