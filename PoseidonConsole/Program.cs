@@ -12,21 +12,17 @@ namespace PoseidonConsole
     {
         static void Main(string[] args)
         {
-            //Test case 1
+            //Test case 1 for signed message of get api key url
             //Calculate sha256 specific to loopring of url
-            BigInteger inputOne = SHA256Helper.CalculateSHA256HashNumber("GET&https%3A%2F%2Fuat3.loopring.io%2Fapi%2Fv3%2FapiKey&accountId%3D11087");
-            Debug.Assert(inputOne == BigInteger.Parse("19400808358061590369279192378878962429412529891699423035130831734199348072763"), "Hash doesn't match expected hash!");
-            int MAX_INPUT = 1; //Max Input should be the number of BigInteger inputs
-            Poseidon poseidon = new Poseidon(MAX_INPUT + 1,6,53,"poseidon",5, _securityTarget: 128);
-            BigInteger[] inputs = { inputOne };
-            BigInteger testOnePoseidonHash = poseidon.CalculatePoseidonHash(inputs);
-            Debug.Assert(testOnePoseidonHash == BigInteger.Parse("19254303773071461417973161554248988464997154230097311673556244912844777390355"), "Hash doesn't match expected hash!");
-            Console.WriteLine($"Hash of test one is {testOnePoseidonHash}");
-            Eddsa eddsa = new Eddsa(testOnePoseidonHash, Environment.GetEnvironmentVariable("LoopringPrivateKey", EnvironmentVariableTarget.User)); //Put in the calculated poseidon hash in order to Sign
+            BigInteger testOneInput = SHA256Helper.CalculateSHA256HashNumber("GET&https%3A%2F%2Fuat3.loopring.io%2Fapi%2Fv3%2FapiKey&accountId%3D11087");
+            Debug.Assert(testOneInput == BigInteger.Parse("19400808358061590369279192378878962429412529891699423035130831734199348072763"), "Hash doesn't match expected hash!");
+             Console.WriteLine($"Hash of test one is {testOneInput}");
+            Eddsa eddsa = new Eddsa(testOneInput, Environment.GetEnvironmentVariable("LoopringPrivateKey", EnvironmentVariableTarget.User)); //Put in the calculated poseidon hash in order to Sign
             string signedMessage = eddsa.Sign();
-            Debug.Assert(signedMessage == "0x19bdf78654e45f513e3d983c4fa0f90c222ffb37ff1772d6955961f8f414d8f32945dea53a2d12bdcab3a5facaa695503e73608ed75988bfe0df9ae8413bab022e070e3025a288e70f6305e9c44f51480ddc712d8be59870ad0acfdcce9aaa05", "Signed message doesn't match expected signed message");
+            Debug.Assert(signedMessage == "0x02cd51ee31c9d63e6d9796704249fbccaba8fd287e4c7d412bc4d6d88801bb0a067de03f99a1a1194a098522e686a1940024946535d45cbbd02b3bb38722d9f02fa6e5be861a24168738837e7b7f38e4379b26a54a60673afde303e75f47b769", "Signed message doesn't match expected signed message");
             Console.WriteLine($"Signed message: {signedMessage}");
 
+            
             //Test case 2
             int MAX_INPUT_TWO = 4; //Max Input should be the number of BigInteger inputs
             Poseidon poseidonTwo = new Poseidon(MAX_INPUT_TWO + 1, 6, 53, "poseidon", 5, _securityTarget: 128);
