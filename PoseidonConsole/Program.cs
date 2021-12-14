@@ -14,6 +14,9 @@ namespace PoseidonConsole
         {
             //Test case 1 for signed message of get api key url
             //Calculate sha256 specific to loopring of url
+            BigInteger testOneInput = SHA256Helper.CalculateSHA256HashNumber("GET&https%3A%2F%2Fuat3.loopring.io%2Fapi%2Fv3%2FapiKey&accountId%3D11087");
+            Debug.Assert(testOneInput == BigInteger.Parse("19400808358061590369279192378878962429412529891699423035130831734199348072763"), "Hash doesn't match expected hash!");
+             Console.WriteLine($"Hash of test one is {testOneInput}");
             Eddsa eddsa = new Eddsa(BigInteger.Parse("15262223708097584402615283257936266522564860189809682357548133077263290491192"), Environment.GetEnvironmentVariable("LoopringPrivateKey", EnvironmentVariableTarget.User)); //Put in the calculated poseidon hash in order to Sign
             string signedMessage = eddsa.Sign();
             Debug.Assert(signedMessage == "0x02cd51ee31c9d63e6d9796704249fbccaba8fd287e4c7d412bc4d6d88801bb0a067de03f99a1a1194a098522e686a1940024946535d45cbbd02b3bb38722d9f02fa6e5be861a24168738837e7b7f38e4379b26a54a60673afde303e75f47b769", "Signed message doesn't match expected signed message");
