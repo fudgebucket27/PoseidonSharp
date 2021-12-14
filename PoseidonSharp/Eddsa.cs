@@ -22,7 +22,13 @@ namespace PoseidonSharp
         public Eddsa(BigInteger _originalPoseidonHash, string _privateKey)
         {
             OriginalPoseidonHash = _originalPoseidonHash;
-            PrivateKey = BigInteger.Parse(_privateKey.Substring(2, _privateKey.Length - 2), NumberStyles.AllowHexSpecifier); ;
+            BigInteger privateKeyBigInteger = BigInteger.Parse(_privateKey.Substring(2, _privateKey.Length - 2), NumberStyles.AllowHexSpecifier);
+            if(privateKeyBigInteger.Sign == -1)
+            {
+                string bigIntHex = "0" + privateKeyBigInteger.ToString("x2");
+                privateKeyBigInteger = BigInteger.Parse(bigIntHex, NumberStyles.AllowHexSpecifier);
+            }
+            PrivateKey = privateKeyBigInteger;
         }
 
         public string Sign(object _points = null)
