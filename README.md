@@ -2,7 +2,7 @@
 ## Intro
 PoseidonSharp is a C# Poseidon hashing library mainly for use with the (unofficial)(WIP) C# Loopring API - https://github.com/taranasus/LoopringAPI . [Loopring](https://loopring.io/#/) is a layer 2 scaling solution for Ethereum.
 
-This library's reference implementation was originally in python and taken from https://github.com/Loopring/hello_loopring/blob/loopring-v3/tutorials/hash_and_sign/poseidon_hash_sample.py. As there was no C# implementationm for Poseidon,this referenced python code was converted to C# by yours truly.
+This library's reference implementation was originally in python and taken from https://github.com/Loopring/hello_loopring/blob/loopring-v3/tutorials/hash_and_sign/poseidon_hash_sample.py. As there was no C# implementation for Poseidon,this referenced python code was converted to C# by yours truly.
 
 This is probably not production ready...so use at your own risk!
 
