@@ -28,7 +28,7 @@ namespace PoseidonSharp
             Debug.Assert(_nRoundsF % 2 == 0 && _nRoundsF > 0, "_nRoundsF needs to have modulus 2 of 0 and be more than 0");
             Debug.Assert(_nRoundsP > 0, "_nRoundsP needs to be more than 0");
 
-            double n = Math.Floor(Math.Log2((double)SNARK_SCALAR_FIELD));
+            double n = Math.Floor(Math.Log((double)SNARK_SCALAR_FIELD,2));
             double M;
             if (_securityTarget == 0)
             {
@@ -65,7 +65,7 @@ namespace PoseidonSharp
                 throw new ArgumentException("Invalid SNARK_SCALAR_FIELD for congruency");
             }
 
-            Debug.Assert((_nRoundsF + _nRoundsP) > ((interpolationAttackRatio * Math.Min(n, M)) + Math.Log2(_t)), "(nRoundsF + nRoundsP) > ((2 + min(M, n)) * grobner_attack_ratio_rounds)");
+            Debug.Assert((_nRoundsF + _nRoundsP) > ((interpolationAttackRatio * Math.Min(n, M)) + Math.Log(_t,2)), "(nRoundsF + nRoundsP) > ((2 + min(M, n)) * grobner_attack_ratio_rounds)");
             Debug.Assert((_nRoundsF + _nRoundsP) > ((2 + Math.Min(M, n)) * grobnerAttackRatioRounds), "(nRoundsF + nRoundsP) > ((2 + min(M, n)) * grobner_attack_ratio_rounds)");
             Debug.Assert((_nRoundsF + (_t * _nRoundsP)) > (M * grobnerAttackRatioSBoxes), "(nRoundsF + (t * nRoundsP)) > (M * grobner_attack_ratio_sboxes)");
 
@@ -167,7 +167,11 @@ namespace PoseidonSharp
                 Debug.Assert(inputs.Length < T, "Inputs should be less than t");
             }
             BigInteger[] state = new BigInteger[T];
-            Array.Fill(state, 0);
+
+            for(long i = 0; i < T;i++)
+            {
+                state[i] = 0;
+            }            
 
             for (int i = 0; i < inputs.Length; i++)
             {
