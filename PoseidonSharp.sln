@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31410.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoseidonSharp", "PoseidonSharp\PoseidonSharp.csproj", "{626151F3-CCA0-430F-B32D-3EBB885BE341}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoseidonSharp", "PoseidonSharp\PoseidonSharp.csproj", "{626151F3-CCA0-430F-B32D-3EBB885BE341}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoseidonConsole", "PoseidonConsole\PoseidonConsole.csproj", "{3EA23D88-2EFA-42B8-9939-4C72F2371889}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoseidonConsole", "PoseidonConsole\PoseidonConsole.csproj", "{3EA23D88-2EFA-42B8-9939-4C72F2371889}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoseidonTests", "PoseidonTests\PoseidonTests.csproj", "{0F5334CD-544E-461A-9DB0-C6CC6EA1FD10}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{3EA23D88-2EFA-42B8-9939-4C72F2371889}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EA23D88-2EFA-42B8-9939-4C72F2371889}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EA23D88-2EFA-42B8-9939-4C72F2371889}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F5334CD-544E-461A-9DB0-C6CC6EA1FD10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F5334CD-544E-461A-9DB0-C6CC6EA1FD10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F5334CD-544E-461A-9DB0-C6CC6EA1FD10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F5334CD-544E-461A-9DB0-C6CC6EA1FD10}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

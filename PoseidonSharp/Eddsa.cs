@@ -25,7 +25,7 @@ namespace PoseidonSharp
             BigInteger privateKeyBigInteger = BigInteger.Parse(_privateKey.Substring(2, _privateKey.Length - 2), NumberStyles.AllowHexSpecifier);
             if(privateKeyBigInteger.Sign == -1)
             {
-                string bigIntHex = "0" + privateKeyBigInteger.ToString("x2");
+                string bigIntHex = "0" + _privateKey.Substring(2, _privateKey.Length - 2);
                 privateKeyBigInteger = BigInteger.Parse(bigIntHex, NumberStyles.AllowHexSpecifier);
             }
             PrivateKey = privateKeyBigInteger;
@@ -83,8 +83,6 @@ namespace PoseidonSharp
             string finalMessage = "0x" + rX + rY + rS;
             return finalMessage;
         }
-
-
 
         private BigInteger HashPublic((BigInteger x, BigInteger y) r, (BigInteger x, BigInteger y) a, BigInteger m)
         {
