@@ -42,6 +42,7 @@ namespace PoseidonSharp
             {
                 B = Point.Generator();
             }
+
             (BigInteger x, BigInteger y) A = Point.Multiply(PrivateKey, B);
             BigInteger r = HashPrivateKey(PrivateKey, OriginalHash);
             (BigInteger x, BigInteger y) R = Point.Multiply(r, B);
@@ -54,11 +55,11 @@ namespace PoseidonSharp
 
             Signature signature = new Signature(R, S);
             SignedMessage signedMessage = new SignedMessage(A, signature, OriginalHash);
-            string rX = signedMessage.Sig.R.x.ToString("x").PadLeft(64,'0');
-            string rY = signedMessage.Sig.R.y.ToString("x").PadLeft(64, '0');
-            string rS = signedMessage.Sig.S.ToString("x").PadLeft(64, '0');
-            string finalMessage = "0x" + rX + rY + rS;
-            return finalMessage;
+            string rX = signedMessage.Signature.R.x.ToString("x").PadLeft(64,'0');
+            string rY = signedMessage.Signature.R.y.ToString("x").PadLeft(64, '0');
+            string rS = signedMessage.Signature.S.ToString("x").PadLeft(64, '0');
+            string finalSignedMessage = "0x" + rX + rY + rS;
+            return finalSignedMessage;
         }
 
         private BigInteger HashPublic((BigInteger x, BigInteger y) r, (BigInteger x, BigInteger y) a, BigInteger m)
