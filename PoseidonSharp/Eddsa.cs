@@ -95,7 +95,17 @@ namespace PoseidonSharp
         {
             var secretBytes = CalculateNumberOfBytes(k);
             var mBytes = CalculateNumberOfBytes(args);
-            var combinedBytes = CombineBytes(secretBytes, mBytes); 
+            byte[] positiveBytes = null;
+            if (mBytes.Length < 32) //pad out bits
+            {
+                positiveBytes = new byte[mBytes.Length + 1];
+                Array.Copy(mBytes, positiveBytes, mBytes.Length);
+            }
+            else
+            {
+                positiveBytes = mBytes;
+            }
+            var combinedBytes = CombineBytes(secretBytes, positiveBytes);
             byte[] sha512Hash;
             SHA512 sha512 = new SHA512Managed();
             sha512Hash = sha512.ComputeHash(combinedBytes);
