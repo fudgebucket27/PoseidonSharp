@@ -11,7 +11,7 @@ namespace PoseidonSharp
 {
     public class Eddsa
     {
-        private BigInteger OriginalPoseidonHash = new BigInteger();
+        private BigInteger OriginalHash { get; set; }
         private BigInteger PrivateKey { get; set; }
 
         private static BigInteger JUBJUB_E = BigInteger.Parse("21888242871839275222246405745257275088614511777268538073601725287587578984328");
@@ -19,13 +19,13 @@ namespace PoseidonSharp
         private static BigInteger JUBJUB_L = BigInteger.DivRem(JUBJUB_E, JUBJUB_C, out JUBJUB_L);
 
 
-        public Eddsa(BigInteger _originalPoseidonHash, string _privateKey)
+        public Eddsa(BigInteger _originalHash, string _privateKey)
         {
-            OriginalPoseidonHash = _originalPoseidonHash;
+            OriginalHash = _originalHash;
             BigInteger privateKeyBigInteger = BigInteger.Parse(_privateKey.Substring(2, _privateKey.Length - 2), NumberStyles.AllowHexSpecifier);
-            if(privateKeyBigInteger.Sign == -1)
+            if(privateKeyBigInteger.Sign == -1) //hex parse in big integer can make a negative number so we need to convert as below
             {
-                string bigIntHex = "0" + _privateKey.Substring(2, _privateKey.Length - 2);
+                string bigIntHex = "0" + _privateKey.Substring(2, _privateKey.Length - 2); //add a zero to the front of the string to make it positive
                 privateKeyBigInteger = BigInteger.Parse(bigIntHex, NumberStyles.AllowHexSpecifier);
             }
             PrivateKey = privateKeyBigInteger;
@@ -33,7 +33,7 @@ namespace PoseidonSharp
 
         public string Sign(object _points = null)
         {
-            (BigInteger x, BigInteger y) B;;
+            (BigInteger x, BigInteger y) B;
             if (_points != null)
             {
                 B = ((BigInteger x, BigInteger))_points;
@@ -42,44 +42,21 @@ namespace PoseidonSharp
             {
                 B = Point.Generator();
             }
-            Debug.WriteLine($"Private key: {PrivateKey}");
-            Debug.WriteLine($"B: {B}");
             (BigInteger x, BigInteger y) A = Point.Multiply(PrivateKey, B);
-            Debug.WriteLine($"A: {A}");
-
-            Debug.WriteLine($"original poseidon hash: {OriginalPoseidonHash}");
-            BigInteger M = OriginalPoseidonHash;
-            Debug.WriteLine($"M: {M}");
-           
-            BigInteger key = PrivateKey;
-            BigInteger r = HashSecret(key, M);
-            Debug.WriteLine($"r: {r}");
-
+            BigInteger r = HashPrivateKey(PrivateKey, OriginalHash);
             (BigInteger x, BigInteger y) R = Point.Multiply(r, B);
-            Debug.WriteLine($"R: {R}");
-
-            BigInteger t = HashPublic(R, A, M);
-            Debug.WriteLine($"t: {t}");
-
-            BigInteger S = (r + (key * t)) % JUBJUB_E;
+            BigInteger t = HashPublic(R, A, OriginalHash);
+            BigInteger S = (r + (PrivateKey * t)) % JUBJUB_E;
             if (S.Sign == -1)
             {
                 S = S + JUBJUB_E;
             }
 
-            Debug.WriteLine($"S: {S}");
-
             Signature signature = new Signature(R, S);
-            SignedMessage signedMessage = new SignedMessage(A, signature, OriginalPoseidonHash);
- 
+            SignedMessage signedMessage = new SignedMessage(A, signature, OriginalHash);
             string rX = signedMessage.Sig.R.x.ToString("x").PadLeft(64,'0');
             string rY = signedMessage.Sig.R.y.ToString("x").PadLeft(64, '0');
             string rS = signedMessage.Sig.S.ToString("x").PadLeft(64, '0');
-
-            Debug.WriteLine(rX);
-            Debug.WriteLine(rY);
-            Debug.WriteLine(rS);
-
             string finalMessage = "0x" + rX + rY + rS;
             return finalMessage;
         }
@@ -91,33 +68,33 @@ namespace PoseidonSharp
             return poseidon.CalculatePoseidonHash(inputs);
         }
 
-        private BigInteger HashSecret(BigInteger k, BigInteger args)
+        private BigInteger HashPrivateKey(BigInteger privateKey, BigInteger originalHash)
         {
-            var secretBytes = CalculateNumberOfBytes(k);
-            var mBytes = CalculateNumberOfBytes(args);
-            byte[] positiveBytes = null;
-            if (mBytes.Length < 32) //pad out bits
+            var secretBytes = CalculateNumberOfBytesAndReturnByteArray(privateKey);
+            var originalHashBytes = CalculateNumberOfBytesAndReturnByteArray(originalHash);
+            byte[] originalHashPaddedBytes = null;
+            if (originalHashBytes.Length < 32) //Pad out byte array to 32 bytes as the original hash can sometimes give less than a 32 byte array
             {
-                positiveBytes = new byte[mBytes.Length + 1];
-                Array.Copy(mBytes, positiveBytes, mBytes.Length);
+                originalHashPaddedBytes = new byte[originalHashBytes.Length + 1];
+                Array.Copy(originalHashBytes, originalHashPaddedBytes, originalHashBytes.Length);
             }
             else
             {
-                positiveBytes = mBytes;
+                originalHashPaddedBytes = originalHashBytes;
             }
-            var combinedBytes = CombineBytes(secretBytes, positiveBytes);
-            byte[] sha512Hash;
-            SHA512 sha512 = new SHA512Managed();
-            sha512Hash = sha512.ComputeHash(combinedBytes);
+            var combinedPrivateKeyAndPoseidonHashBytes = CombineBytes(secretBytes, originalHashPaddedBytes);
+            byte[] sha512HashBytes;
+            SHA512 sha512Managed = new SHA512Managed();
+            sha512HashBytes = sha512Managed.ComputeHash(combinedPrivateKeyAndPoseidonHashBytes);
 
-            BigInteger sha512Num = new BigInteger(sha512Hash);
-            if(sha512Num.Sign == -1)
+            BigInteger sha512HashedNumber = new BigInteger(sha512HashBytes);
+            if(sha512HashedNumber.Sign == -1) //sha512 in bytes is a hex number so sometimes can return negative
             {
-                string bigIntHex = "0" + sha512Num.ToString("x");
-                sha512Num = BigInteger.Parse(bigIntHex, NumberStyles.AllowHexSpecifier);
+                string bigIntHex = "0" + sha512HashedNumber.ToString("x"); //add a zero to the front of the hex string to make it a  positive number
+                sha512HashedNumber = BigInteger.Parse(bigIntHex, NumberStyles.AllowHexSpecifier);
             }
 
-            BigInteger result = sha512Num %  JUBJUB_L;
+            BigInteger result = sha512HashedNumber %  JUBJUB_L;
             if (result.Sign == -1)
             {
                 result = result + JUBJUB_L;
@@ -126,13 +103,13 @@ namespace PoseidonSharp
             return result;
         }
 
-        private byte[] CalculateNumberOfBytes(BigInteger self)
+        private byte[] CalculateNumberOfBytesAndReturnByteArray(BigInteger bigIntegerValue) //Don't really need to calcuate the number of bytes but is helpful for debugging
         {
-            BigInteger nBits = (BigInteger)Math.Ceiling(BigInteger.Log(self, 2));
-            nBits += 8 - (nBits % 8);
-            BigInteger nBytes = new BigInteger();
-            nBytes = BigInteger.DivRem(nBits, 8, out nBytes);
-            return self.ToByteArray();
+            BigInteger numberOfBits = (BigInteger)Math.Ceiling(BigInteger.Log(bigIntegerValue, 2));
+            numberOfBits += 8 - (numberOfBits % 8);
+            BigInteger numberOfBytes = new BigInteger();
+            numberOfBytes = BigInteger.DivRem(numberOfBits, 8, out numberOfBytes); //We want 32 bytes otherwise we will have to pad out the byte array
+            return bigIntegerValue.ToByteArray();
         }
 
         public static byte[] CombineBytes(byte[] first, byte[] second)
