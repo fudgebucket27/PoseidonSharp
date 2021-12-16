@@ -66,5 +66,8 @@ static void Main(string[] args)
 }
 ```
 
+# Thanks to
+[Taransus](https://github.com/taranasus) for code contributions and reviewing.
+
 ## License
 Fork this repo and do what you want with it! If you like my work and want to buy me a beer you can send me some ethereum to fudgey.eth ;)
