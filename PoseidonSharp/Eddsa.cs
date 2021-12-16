@@ -90,8 +90,8 @@ namespace PoseidonSharp
             BigInteger sha512HashedNumber = new BigInteger(sha512HashBytes);
             if(sha512HashedNumber.Sign == -1) //sha512 in bytes is a hex number so sometimes can return negative
             {
-                string bigIntHex = "0" + sha512HashedNumber.ToString("x"); //add a zero to the front of the hex string to make it a  positive number
-                sha512HashedNumber = BigInteger.Parse(bigIntHex, NumberStyles.AllowHexSpecifier);
+                string sha512HexString = "0" + sha512HashedNumber.ToString("x"); //add a zero to the front of the hex string to make it a  positive number
+                sha512HashedNumber = BigInteger.Parse(sha512HexString, NumberStyles.AllowHexSpecifier);
             }
 
             BigInteger result = sha512HashedNumber %  JUBJUB_L;
