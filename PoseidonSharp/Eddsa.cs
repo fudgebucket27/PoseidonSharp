@@ -25,7 +25,7 @@ namespace PoseidonSharp
             BigInteger privateKeyBigInteger = BigInteger.Parse(_privateKey.Substring(2, _privateKey.Length - 2), NumberStyles.AllowHexSpecifier);
             if(privateKeyBigInteger.Sign == -1)
             {
-                string bigIntHex = "0" + privateKeyBigInteger.ToString("x2");
+                string bigIntHex = "0" + _privateKey.Substring(2, _privateKey.Length - 2);
                 privateKeyBigInteger = BigInteger.Parse(bigIntHex, NumberStyles.AllowHexSpecifier);
             }
             PrivateKey = privateKeyBigInteger;
@@ -84,8 +84,6 @@ namespace PoseidonSharp
             return finalMessage;
         }
 
-
-
         private BigInteger HashPublic((BigInteger x, BigInteger y) r, (BigInteger x, BigInteger y) a, BigInteger m)
         {
             BigInteger[] inputs = { r.x, r.y, a.x, a.y, m};
@@ -97,7 +95,17 @@ namespace PoseidonSharp
         {
             var secretBytes = CalculateNumberOfBytes(k);
             var mBytes = CalculateNumberOfBytes(args);
-            var combinedBytes = CombineBytes(secretBytes, mBytes); 
+            byte[] positiveBytes = null;
+            if (mBytes.Length < 32) //pad out bits
+            {
+                positiveBytes = new byte[mBytes.Length + 1];
+                Array.Copy(mBytes, positiveBytes, mBytes.Length);
+            }
+            else
+            {
+                positiveBytes = mBytes;
+            }
+            var combinedBytes = CombineBytes(secretBytes, positiveBytes);
             byte[] sha512Hash;
             SHA512 sha512 = new SHA512Managed();
             sha512Hash = sha512.ComputeHash(combinedBytes);
