@@ -103,29 +103,28 @@ namespace PoseidonSharp
         private BigInteger CalculateBlake2BHash(BigInteger data)
         {
             var sourceData = data.ToByteArray();
-            if (sourceData.Length <= 32) //pad out bits
+            if (sourceData.Length <= 32) //pad out bytes
             {
-                var hash = Blake2b.ComputeHash(32, sourceData);
-                var positiveHash = new byte[hash.Length + 1];
-                Array.Copy(hash, positiveHash, hash.Length);
-                BigInteger positiveBigInt = new BigInteger(positiveHash);
+                var blake2bHash = Blake2b.ComputeHash(32, sourceData);
+                var positiveHashBytes = new byte[blake2bHash.Length + 1];
+                Array.Copy(blake2bHash, positiveHashBytes, blake2bHash.Length);
+                BigInteger positiveBigInt = new BigInteger(positiveHashBytes);
                 return positiveBigInt;
             }
-            else //truncate bits
+            else //truncate bytes
             {
-                var truncated = new byte[32];
-                Array.Copy(sourceData, truncated, truncated.Length);
-                var hash = Blake2b.ComputeHash(32, truncated);
-                var positiveHash = new byte[hash.Length + 1];
-                Array.Copy(hash, positiveHash, hash.Length);
-                BigInteger positiveBigInt = new BigInteger(positiveHash);
+                var truncatedBytes = new byte[32];
+                Array.Copy(sourceData, truncatedBytes, truncatedBytes.Length);
+                var blake2BHashBytes = Blake2b.ComputeHash(32, truncatedBytes);
+                var positiveHashBytes = new byte[blake2BHashBytes.Length + 1];
+                Array.Copy(blake2BHashBytes, positiveHashBytes, blake2BHashBytes.Length);
+                BigInteger positiveBigInt = new BigInteger(positiveHashBytes);
                 return positiveBigInt;
             }
         }
 
         private List<BigInteger> CalculatePoseidonConstants(BigInteger p, byte[] seed, int nRounds)
         {
-            Debug.Assert(nRounds is int, "nRounds must be int");
             List<BigInteger> poseidonConstants = new List<BigInteger>();
             BigInteger seedBigInt = new BigInteger(seed);
             for (int i = 0; i < nRounds; i++)
