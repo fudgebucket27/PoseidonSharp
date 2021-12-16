@@ -6,7 +6,7 @@ This library's reference implementation was originally in python and taken from 
 
 This is probably not production ready...so use at your own risk!
 
-The included PoseidonConsole project contains some demo code on how to use the library.
+The included PoseidonConsole project contains some demo code on how to use the library. PoseidonTests contains the unit tests for MSTest.
 
 ## Important
 
