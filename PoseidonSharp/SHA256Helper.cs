@@ -13,27 +13,29 @@ namespace PoseidonSharp
 
         public static BigInteger CalculateSHA256HashNumber(string requestText)
         {
-            byte[] urlBytes = Encoding.UTF8.GetBytes(requestText);
+            byte[] requestBytes = Encoding.UTF8.GetBytes(requestText);
+
             SHA256Managed sha256Managed = new SHA256Managed();
-            byte[] sha256HashBytes = sha256Managed.ComputeHash(urlBytes);
+            byte[] sha256HashBytes = sha256Managed.ComputeHash(requestBytes);
             string sha256HashString = string.Empty;
             foreach (byte x in sha256HashBytes)
             {
                 sha256HashString += String.Format("{0:x2}", x);
             }
+
             BigInteger sha256HashNumber = BigInteger.Parse(sha256HashString, NumberStyles.AllowHexSpecifier);
             if (sha256HashNumber.Sign == -1)
             {
-                string bigIntHex = "0" + sha256HashNumber.ToString("x2");
-                sha256HashNumber = BigInteger.Parse(bigIntHex, NumberStyles.AllowHexSpecifier);
-            }
-            BigInteger retValue = sha256HashNumber % SNARK_SCALAR_FIELD;
-            if (retValue.Sign == -1)
-            {
-                retValue = retValue + SNARK_SCALAR_FIELD;
+                string sha256HashAsPositiveHexString = "0" + sha256HashNumber.ToString("x2");
+                sha256HashNumber = BigInteger.Parse(sha256HashAsPositiveHexString, NumberStyles.AllowHexSpecifier);
             }
 
-            return retValue;
+            BigInteger result = sha256HashNumber % SNARK_SCALAR_FIELD;
+            if (result.Sign == -1)
+            {
+                result = result + SNARK_SCALAR_FIELD;
+            }
+            return result;
         }
     }
 }
