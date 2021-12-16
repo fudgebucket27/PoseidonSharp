@@ -25,8 +25,8 @@ namespace PoseidonSharp
             BigInteger privateKeyBigInteger = BigInteger.Parse(_privateKey.Substring(2, _privateKey.Length - 2), NumberStyles.AllowHexSpecifier);
             if(privateKeyBigInteger.Sign == -1) //hex parse in big integer can make a negative number so we need to convert as below
             {
-                string bigIntHex = "0" + _privateKey.Substring(2, _privateKey.Length - 2); //add a zero to the front of the string to make it positive
-                privateKeyBigInteger = BigInteger.Parse(bigIntHex, NumberStyles.AllowHexSpecifier);
+                string privateKeyAsPositiveHexString = "0" + _privateKey.Substring(2, _privateKey.Length - 2); //add a zero to the front of the string to make it positive
+                privateKeyBigInteger = BigInteger.Parse(privateKeyAsPositiveHexString, NumberStyles.AllowHexSpecifier);
             }
             PrivateKey = privateKeyBigInteger;
         }
