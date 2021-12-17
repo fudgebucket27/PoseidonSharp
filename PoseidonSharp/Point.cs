@@ -19,10 +19,7 @@ namespace PoseidonSharp
         public static (BigInteger, BigInteger) Multiply(BigInteger scalar, (BigInteger x, BigInteger y) _points)
         {
             (BigInteger x, BigInteger y) p = ((BigInteger x, BigInteger y))_points;
-            Debug.WriteLine($"p {p}");
             (BigInteger x, BigInteger y) a = Infinity();
-            Debug.WriteLine($"a {a}");
-
             int i = 0;
             while (scalar != 0)
             {
