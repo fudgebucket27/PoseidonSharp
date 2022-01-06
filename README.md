@@ -1,4 +1,4 @@
-# PoseidonSharp [![.NET](https://github.com/fudgebucket27/PoseidonSharp/actions/workflows/dotnet.yml/badge.svg?branch=master)](https://github.com/fudgebucket27/PoseidonSharp/actions/workflows/dotnet.yml)
+# PoseidonSharp [![.NET](https://github.com/fudgebucket27/PoseidonSharp/actions/workflows/dotnet.yml/badge.svg?branch=master)](https://github.com/fudgebucket27/PoseidonSharp/actions/workflows/dotnet.yml) ![Nuget](https://img.shields.io/nuget/v/PoseidonSharp)
 ## Intro
 PoseidonSharp is a C# Poseidon hashing library mainly for use with the (unofficial)(WIP) C# Loopring API - https://github.com/taranasus/LoopringAPI . [Loopring](https://loopring.io/#/) is a layer 2 scaling solution for Ethereum.
 
@@ -7,7 +7,7 @@ This library's reference implementation was originally in python and taken from 
 The included PoseidonConsole project contains some demo code on how to use the library. PoseidonTests contains the unit tests for MSTest.
 
 ## Adding PoseidonSharp to your project
-You can either submodule this repository or add it as a dependency to your project via Nuget Package Manager in Visual Studio with the following command:
+You can either submodule this repository or add it as a dependency to your project via NuGet Package Manager in Visual Studio with the following command:
 
     Install-Package PoseidonSharp -Version 1.0.0
 
