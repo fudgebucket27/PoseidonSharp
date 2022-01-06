@@ -14,7 +14,7 @@
 
 -Poseidon Hash works
 -Poseidon EDDSA works</PackageReleaseNotes>
-    <PackageIcon>poseidonsharp.jpg</PackageIcon>
+    <PackageIcon></PackageIcon>
     <PackageIconUrl />
     <NeutralLanguage>en-AU</NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -23,13 +23,6 @@
 
   <ItemGroup>
     <PackageReference Include="SauceControl.Blake2Fast" Version="2.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\..\..\Users\jtrembath\Pictures\poseidonsharp.jpg">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
   </ItemGroup>
 
 </Project>
