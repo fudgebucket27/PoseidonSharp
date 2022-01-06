@@ -12,9 +12,9 @@ namespace PoseidonTests
     {
         private static string PrivateKey = "0xff2f95f7f25dd17d160595603d49f9bd0bae765403d5d171fe1db2a3218c91"; // This private key has been unpaired from the real account
         private static string PrivateKey2 = "0x19bd8d52d552d2f112b478686f18577b8088e5b1860c3523c53f943304951c3"; //This private key has been unpaired from the real account
-        private static string PrivateKey3 = "0xfe81367c30e6b5409feb5b9f9e69cbaae2d30a1612a2dcb70635fbeded8c87"; //This private key has been unpaired from the real account
+        private static string PrivateKey3 = "0x4485ade3c570854e240c72e9a9162e629f8e30db4d8130856da31787e7400f0"; //This private key has been unpaired from the real account
         [TestMethod]
-        [Description("Hash and sign with first private key")]
+        [Description("Hash and sign with first private key, it generates a negative big integer from the private key and generates a byte array of 32")]
         public void PoseidonEddsaTest1() 
         {
             int MAX_INPUT = 13;
@@ -28,7 +28,7 @@ namespace PoseidonTests
         }
 
         [TestMethod]
-        [Description("Hash and sign with second private key")]
+        [Description("Hash and sign with second private key, generates a positive big integer from the private key and generates a byte array of 31")]
         public void PoseidonEddsaTest2()
         {
             int MAX_INPUT = 13;
@@ -42,7 +42,7 @@ namespace PoseidonTests
         }
 
         [TestMethod]
-        [Description("Hash and sign with third private key")]
+        [Description("Hash and sign with third private key, generates a positive big integer from the private key and generates a byte array of 32")]
         public void PoseidonEddsaTest3()
         {
             int MAX_INPUT = 1;
@@ -52,7 +52,7 @@ namespace PoseidonTests
             Assert.AreEqual(BigInteger.Parse("4039926191380788949286172671420227647869138762868816863744279168259334375146"), poseidonHash, "Hashes don't match!");
             Eddsa eddsa = new Eddsa(poseidonHash, PrivateKey3);
             string signedMessage = eddsa.Sign();
-            Assert.AreEqual("0x08b2d831b6405695ee6c3ed9e87c4a3ca3616edd8a53190defc7421f4db352f72b9d62fb33252df1b6b3f308410c13c42d83fc4a68272718d40db85fd34a0b6203e2dfda1bc31828d0d0329f4d57a6f098e1fecd8c7e091b6a3138dcd43d2c67", signedMessage, "Signed messages don't match!");
+            Assert.AreEqual("0x2548f1aa374db001ac03fc9e113a9ba0fddd84070acc9fb47e2aa22d1573c0fc1d58cd798ef835d0d8d24f6ef49402e25d3f14604e142cc575a4199bce62ee4e18477876f7993ff9e109c48f88f9ec25f2251635edb56dd6bb51f512b0a2203d", signedMessage, "Signed messages don't match!");
         }
 
     }
