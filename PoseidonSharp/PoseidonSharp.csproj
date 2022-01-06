@@ -2,10 +2,34 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>fudgey.eth</Authors>
+    <Description>This is a Poseidon Hashing Library built for use with Loopring</Description>
+    <Version>1.0.0</Version>
+    <PackageProjectUrl>https://github.com/fudgebucket27/PoseidonSharp</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/fudgebucket27/PoseidonSharp</RepositoryUrl>
+    <PackageTags>poseidon loopring cryptography cryptocurrency hash hashing crypto</PackageTags>
+    <PackageReleaseNotes>Initial release. 
+
+-Poseidon Hash works
+-Poseidon EDDSA works</PackageReleaseNotes>
+    <PackageIcon>poseidonsharp.jpg</PackageIcon>
+    <PackageIconUrl />
+    <NeutralLanguage>en-AU</NeutralLanguage>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Company />
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="SauceControl.Blake2Fast" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\..\Users\jtrembath\Pictures\poseidonsharp.jpg">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
