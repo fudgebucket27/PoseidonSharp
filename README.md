@@ -1,12 +1,15 @@
-# PoseidonSharp [![.NET](https://github.com/fudgebucket27/PoseidonSharp/actions/workflows/dotnet.yml/badge.svg?branch=master)](https://github.com/fudgebucket27/PoseidonSharp/actions/workflows/dotnet.yml)
+# PoseidonSharp [![.NET](https://github.com/fudgebucket27/PoseidonSharp/actions/workflows/dotnet.yml/badge.svg?branch=master)](https://github.com/fudgebucket27/PoseidonSharp/actions/workflows/dotnet.yml) [![NuGet version](https://badge.fury.io/nu/PoseidonSharp.svg)](https://badge.fury.io/nu/PoseidonSharp)
 ## Intro
 PoseidonSharp is a C# Poseidon hashing library mainly for use with the (unofficial)(WIP) C# Loopring API - https://github.com/taranasus/LoopringAPI . [Loopring](https://loopring.io/#/) is a layer 2 scaling solution for Ethereum.
 
 This library's reference implementation was originally in python and taken from https://github.com/Loopring/hello_loopring/blob/loopring-v3/tutorials/hash_and_sign/poseidon_hash_sample.py. As there was no C# implementation for Poseidon,this referenced python code was converted to C# by yours truly.
 
-This is probably not production ready...so use at your own risk!
-
 The included PoseidonConsole project contains some demo code on how to use the library. PoseidonTests contains the unit tests for MSTest.
+
+## Adding PoseidonSharp to your project
+You can either submodule this repository or add it as a dependency to your project via NuGet Package Manager in Visual Studio with the following command:
+
+    Install-Package PoseidonSharp -Version 1.0.0
 
 ## Important
 
@@ -31,9 +34,9 @@ static void Main(string[] args)
   //Test case 1
   BigInteger[] inputs = { BigInteger.Parse("19254303773071461417973161554248988464997154230097311673556244912844777390355") };//Max Input should be the number of BigInteger inputs
   BigInteger testOnePoseidonHash = poseidon.CalculatePoseidonHash(inputs);
-  Debug.Assert(testOnePoseidonHash == BigInteger.Parse("19254303773071461417973161554248988464997154230097311673556244912844777390355"), "Hash doesn't match expected hash!");
-  Console.WriteLine($"Hash of test one is {testOne}");
-  Eddsa eddsa = new Eddsa(testOne, Environment.GetEnvironmentVariable("LoopringPrivateKey", EnvironmentVariableTarget.User)); //Put in the calculated poseidon hash in order to Sign
+  Debug.Assert(testOnePoseidonHash == BigInteger.Parse("7641334598873409723829611087914304630148005125097433494966402842069929245490"), "Hash doesn't match expected hash!");
+  Console.WriteLine($"Hash of test one is {testOnePoseidonHash}");
+  Eddsa eddsa = new Eddsa(testOnePoseidonHash, Environment.GetEnvironmentVariable("LoopringPrivateKey", EnvironmentVariableTarget.User)); //Put in the calculated poseidon hash in order to Sign
   string signedMessage = eddsa.Sign();
   Debug.Assert(signedMessage == "0x19bdf78654e45f513e3d983c4fa0f90c222ffb37ff1772d6955961f8f414d8f32945dea53a2d12bdcab3a5facaa695503e73608ed75988bfe0df9ae8413bab022e070e3025a288e70f6305e9c44f51480ddc712d8be59870ad0acfdcce9aaa05", "Signed message doesn't match expected signed message");
   Console.WriteLine($"Signed message: {signedMessage}");
