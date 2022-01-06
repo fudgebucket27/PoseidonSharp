@@ -8,26 +8,29 @@ namespace PoseidonTests
     public class HashingTests
     {
         [TestMethod]
+        [Description("Poseidon hash test for small big integer")]
         public void PoseidonHashTest1()
         {
             int MAX_INPUT = 13;
             Poseidon poseidon = new Poseidon(MAX_INPUT + 1, 6, 53, "poseidon", 5, _securityTarget: 128);
             BigInteger[] inputs = { BigInteger.Parse("1")};
             BigInteger poseidonHash = poseidon.CalculatePoseidonHash(inputs);
-            Assert.AreEqual(BigInteger.Parse("14018714854885098128064817341184136022863799846023165041562300563859625887667"), poseidonHash);
+            Assert.AreEqual(BigInteger.Parse("14018714854885098128064817341184136022863799846023165041562300563859625887667"), poseidonHash, "Hashes don't match!");
         }
 
         [TestMethod]
+        [Description("Poseidon hash test for very large big integer")]
         public void PoseidonHashTest2()
         {
             int MAX_INPUT = 13;
             Poseidon poseidon = new Poseidon(MAX_INPUT + 1, 6, 53, "poseidon", 5, _securityTarget: 128);
             BigInteger[] inputs = {BigInteger.Parse("14018714854885098128064817341184136022863799846023165041562300563859625887667")};
             BigInteger poseidonHash = poseidon.CalculatePoseidonHash(inputs);
-            Assert.AreEqual(BigInteger.Parse("14909270658865229119931025210898882982405891235271722645312816457103330375266"), poseidonHash);
+            Assert.AreEqual(BigInteger.Parse("14909270658865229119931025210898882982405891235271722645312816457103330375266"), poseidonHash, "Hashes don't match!");
         }
 
         [TestMethod]
+        [Description("Poseidon hash test for multiple inputs")]
         public void PoseidonHashTest3()
         {
             int MAX_INPUT = 13;
@@ -41,14 +44,15 @@ namespace PoseidonTests
                 BigInteger.Parse("1000000000000")
             };
             BigInteger poseidonHash = poseidon.CalculatePoseidonHash(inputs);
-            Assert.AreEqual(BigInteger.Parse("12787485214590893264756354332223190110048608099767720695619651876987364797309"), poseidonHash);
+            Assert.AreEqual(BigInteger.Parse("12787485214590893264756354332223190110048608099767720695619651876987364797309"), poseidonHash, "Hashes don't match!");
         }
 
         [TestMethod]
+        [Description("SHA256Helper hash test for GET request")]
         public void SHA256HelperHashTest1()
         {
             BigInteger sha256HashNumber = SHA256Helper.CalculateSHA256HashNumber("GET&https%3A%2F%2Fuat3.loopring.io%2Fapi%2Fv3%2FapiKey&accountId%3D11087");
-            Assert.AreEqual(BigInteger.Parse("19400808358061590369279192378878962429412529891699423035130831734199348072763"), sha256HashNumber);
+            Assert.AreEqual(BigInteger.Parse("19400808358061590369279192378878962429412529891699423035130831734199348072763"), sha256HashNumber, "Hashes don't match!");
         }
     }
 }
