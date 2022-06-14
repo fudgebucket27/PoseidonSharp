@@ -72,7 +72,7 @@ static void Main(string[] args)
 ```
 
 # Thanks to
-[Taransus](https://github.com/taranasus) for code contributions and reviewing. [Saucecontrol](https://github.com/saucecontrol) for the Blake2Fast library.
+[Taranasus](https://github.com/taranasus) for code contributions and reviewing. [Saucecontrol](https://github.com/saucecontrol) for the Blake2Fast library.
 
 ## License
-Fork this repo and do what you want with it! If you like my work and want to buy me a beer you can send me some ethereum to fudgey.eth ;)
+Fork this repo and do what you want with it! If you like my work and want to buy me a beer you can send me some ethereum to fudgey.eth or loopring to fudgey.loopring.eth ;)
