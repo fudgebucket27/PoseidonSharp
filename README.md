@@ -1,6 +1,6 @@
 # PoseidonSharp [![.NET](https://github.com/fudgebucket27/PoseidonSharp/actions/workflows/dotnet.yml/badge.svg?branch=master)](https://github.com/fudgebucket27/PoseidonSharp/actions/workflows/dotnet.yml) [![NuGet version](https://badge.fury.io/nu/PoseidonSharp.svg)](https://badge.fury.io/nu/PoseidonSharp)
 ## Intro
-PoseidonSharp is a C# Poseidon hashing library mainly for use with [LoopringSharp](https://github.com/taranasus/LoopringSharp ). 
+PoseidonSharp is a C# Poseidon hashing/signing library used for hashing/signing requests to the Loopring API. 
 
 [Loopring](https://loopring.io/#/) is a layer 2 scaling solution for Ethereum.
 
