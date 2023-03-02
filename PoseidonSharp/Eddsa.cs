@@ -67,6 +67,12 @@ namespace PoseidonSharp
             var A = signedMessage.A;
             var sig = signedMessage.Signature;
             var msg = signedMessage.Message;
+            var B = Point.Generator();
+            var lhs = Point.Multiply(sig.S, B);
+            var hashPublic = HashPublic(sig.R, A, OriginalHash);
+            var aMultiplyHashPublic = Point.Multiply(hashPublic, A);
+           
+
             return false;
         }
 
