@@ -11,7 +11,7 @@ The included PoseidonConsole project contains some demo code on how to use the l
 ## Adding PoseidonSharp to your project
 You can either submodule this repository or add it as a dependency to your project via NuGet Package Manager in Visual Studio with the following command:
 
-    Install-Package PoseidonSharp -Version 1.0.0
+    Install-Package PoseidonSharp -Version 1.0.1
 
 ## Important
 
