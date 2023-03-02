@@ -62,7 +62,7 @@ namespace PoseidonSharp
             return finalSignedMessage;
         }
 
-        private bool Verify(SignedMessage signedMessage)
+        public bool Verify(SignedMessage signedMessage)
         {
             var A = signedMessage.A;
             var sig = signedMessage.Signature;

@@ -9,6 +9,10 @@ namespace PoseidonSharp
     {
         public (BigInteger x, BigInteger y) R = (BigInteger.Parse("0"), BigInteger.Parse("0"));
         public BigInteger S { get; set; }
+        public Signature()
+        {
+
+        }
         public Signature((BigInteger x, BigInteger y) _r, BigInteger _s)
         {
             R.x = _r.x;
