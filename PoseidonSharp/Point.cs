@@ -37,7 +37,7 @@ namespace PoseidonSharp
             return a;
         }
 
-        private static (BigInteger x, BigInteger y) Add((BigInteger x, BigInteger y) self, (BigInteger x, BigInteger y) other)
+        public static (BigInteger x, BigInteger y) Add((BigInteger x, BigInteger y) self, (BigInteger x, BigInteger y) other)
         {
             if (self.x == 0 && self.y == 0)
             {
@@ -84,13 +84,13 @@ namespace PoseidonSharp
             return points;
         }
 
-        private static (BigInteger, BigInteger) Infinity()
+        public static (BigInteger, BigInteger) Infinity()
         {
             (BigInteger x, BigInteger y) points = (BigInteger.Parse("0"), BigInteger.Parse("1"));
             return points;
         }
 
-        private static BigInteger Multiply(BigInteger self, BigInteger other)
+        public static BigInteger Multiply(BigInteger self, BigInteger other)
         {
             (BigInteger m, BigInteger n) points = FQ((self * other) % SNARK_SCALAR_FIELD, SNARK_SCALAR_FIELD);
             if (points.n.Sign == -1)
@@ -100,7 +100,7 @@ namespace PoseidonSharp
             return points.n;
         }
 
-        private static (BigInteger m, BigInteger n) FQ(BigInteger n, BigInteger fieldModulus)
+        public static (BigInteger m, BigInteger n) FQ(BigInteger n, BigInteger fieldModulus)
         {
             BigInteger nReturn = n % fieldModulus;
             if (nReturn.Sign == -1)
@@ -110,7 +110,7 @@ namespace PoseidonSharp
             return (fieldModulus, nReturn);
         }
 
-        private static BigInteger Add(BigInteger self, BigInteger other)
+        public static BigInteger Add(BigInteger self, BigInteger other)
         {
             (BigInteger m, BigInteger n) points = FQ((self + other) % SNARK_SCALAR_FIELD, SNARK_SCALAR_FIELD);
             if (points.n.Sign == -1)
@@ -120,7 +120,7 @@ namespace PoseidonSharp
             return points.n;
         }
 
-        private static BigInteger Subtract(BigInteger self, BigInteger other)
+        public static BigInteger Subtract(BigInteger self, BigInteger other)
         {
             (BigInteger m, BigInteger n) points = FQ((self - other) % SNARK_SCALAR_FIELD, SNARK_SCALAR_FIELD);
             if (points.n.Sign == -1)
@@ -130,7 +130,7 @@ namespace PoseidonSharp
             return points.n;
         }
 
-        private static BigInteger Divide(BigInteger self, BigInteger other)
+        public static BigInteger Divide(BigInteger self, BigInteger other)
         {
             (BigInteger m, BigInteger n) points = FQ((self * BigInteger.ModPow(other, SNARK_SCALAR_FIELD - 2, SNARK_SCALAR_FIELD)) % SNARK_SCALAR_FIELD, SNARK_SCALAR_FIELD);
             if (points.n.Sign == -1)

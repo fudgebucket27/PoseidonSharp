@@ -71,9 +71,8 @@ namespace PoseidonSharp
             var lhs = Point.Multiply(sig.S, B);
             var hashPublic = HashPublic(sig.R, A, OriginalHash);
             var aMultiplyHashPublic = Point.Multiply(hashPublic, A);
-           
-
-            return false;
+            var rhs = Point.Add(sig.R, aMultiplyHashPublic);
+            return lhs == rhs;
         }
 
         private BigInteger HashPublic((BigInteger x, BigInteger y) r, (BigInteger x, BigInteger y) a, BigInteger m)
