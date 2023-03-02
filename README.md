@@ -21,7 +21,7 @@ You can either submodule this repository or add it as a dependency to your proje
 
 3. The EDDSA signed message back is (0x + Rx+  Ry + S) and is specific to Loopring
 
-4. Messages can be verified with the Verify method from the Eddsa class like below:
+4. Signed Messages can be verified with the Verify method from the Eddsa class like below:
 
 ```csharp
 //Verify Correct Key Is Used
