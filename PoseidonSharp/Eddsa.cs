@@ -62,6 +62,14 @@ namespace PoseidonSharp
             return finalSignedMessage;
         }
 
+        private bool Verify(SignedMessage signedMessage)
+        {
+            var A = signedMessage.A;
+            var sig = signedMessage.Signature;
+            var msg = signedMessage.Message;
+            return false;
+        }
+
         private BigInteger HashPublic((BigInteger x, BigInteger y) r, (BigInteger x, BigInteger y) a, BigInteger m)
         {
             BigInteger[] inputs = { r.x, r.y, a.x, a.y, m};
