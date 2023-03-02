@@ -21,6 +21,21 @@ You can either submodule this repository or add it as a dependency to your proje
 
 3. The EDDSA signed message back is (0x + Rx+  Ry + S) and is specific to Loopring
 
+4. Messages can be verified with the Verify method from the Eddsa class like below:
+
+```csharp
+//Verify Correct Key Is Used
+Signature signatureObject = EddsaHelper.SignatureStringToSignatureObject(signedMessage);
+BigInteger privateKeyBigInteger = EddsaHelper.PrivateKeyHexStringToBigInteger(PrivateKey);
+SignedMessage verifySignedMessage = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigInteger), signatureObject, poseidonHash);
+Assert.IsTrue(eddsa.Verify(verifySignedMessage));
+
+//Verify Incorrect Key Is used
+BigInteger privateKeyBigIntegerIncorrect = EddsaHelper.PrivateKeyHexStringToBigInteger(PrivateKey2);
+SignedMessage verifySignedMessageIncorrect = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigIntegerIncorrect), signatureObject, poseidonHash);
+Assert.IsFalse(eddsa.Verify(verifySignedMessageIncorrect));
+```
+
 ## Demo Code
 ```csharp
 using System;
