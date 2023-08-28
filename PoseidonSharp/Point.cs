@@ -19,7 +19,7 @@ namespace PoseidonSharp
         public static (BigInteger, BigInteger) Multiply(BigInteger scalar, (BigInteger x, BigInteger y) _points)
         {
             (BigInteger x, BigInteger y) p = ((BigInteger x, BigInteger y))_points;
-            (BigInteger x, BigInteger y) a = Infinity();
+            (BigInteger x, BigInteger y) a = (BigInteger.Parse("0"), BigInteger.Parse("1"));
             int i = 0;
             while (scalar != 0)
             {
