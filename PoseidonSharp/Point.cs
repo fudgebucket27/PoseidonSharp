@@ -49,10 +49,6 @@ namespace PoseidonSharp
             (BigInteger u1, BigInteger v1) c = (self.x, self.y);
             (BigInteger u2, BigInteger v2) d = (other.x, other.y);
 
-            /* To replicate this function             
-            BigInteger u3 = (c.u1 * d.v2 + c.v1*d.u2) / (one + jubJubD*c.u1*d.u2*c.v1*d.v2);
-            */
-
             BigInteger u3Part1 = Multiply(c.u1, d.v2);
             BigInteger u3Part2 = Multiply(c.v1, d.u2);
             BigInteger u3Part3 = Add(u3Part1, u3Part2);
@@ -61,11 +57,9 @@ namespace PoseidonSharp
             BigInteger u3Part6 = Multiply(u3Part5, c.v1);
             BigInteger u3Part7 = Multiply(u3Part6, d.v2);
             BigInteger u3Part8 = Add(one, u3Part7);
-            BigInteger u3Final = Divide(u3Part3, u3Part8);
+            BigInteger u3Inverse = ExtendedEuclideanInverse(u3Part8, SNARK_SCALAR_FIELD);
+            BigInteger u3Final = Multiply(u3Part3, u3Inverse);
 
-            /* To replicate this function             
-            BigInteger v3 = (c.v1*d.v2 - jubJubA*c.u1*d.u2) / (one + jubJubD*c.u1*d.u2*c.v1*d.v2);
-            */
 
             BigInteger v3Part1 = Multiply(c.v1, d.v2);
             BigInteger v3Part2 = Multiply(jubJubA, c.u1);
@@ -78,7 +72,8 @@ namespace PoseidonSharp
             BigInteger v3Part8 = Multiply(v3Part7, d.v2);
             BigInteger v3Part9 = Subtract(one, v3Part8);
 
-            BigInteger v3Final = Divide(v3Part4, v3Part9);
+            BigInteger v3Inverse = ExtendedEuclideanInverse(v3Part9, SNARK_SCALAR_FIELD);
+            BigInteger v3Final = Multiply(v3Part4, v3Inverse);
 
             (BigInteger x, BigInteger y) points = (u3Final, v3Final);
             return points;
@@ -140,5 +135,26 @@ namespace PoseidonSharp
             return points.n;
         }
 
+        public static BigInteger ExtendedEuclideanInverse(BigInteger a, BigInteger modulus)
+        {
+            BigInteger t = 0, newt = 1;
+            BigInteger r = modulus, newr = a;
+            while (newr != 0)
+            {
+                BigInteger quotient = r / newr;
+
+                (t, newt) = (newt, t - quotient * newt);
+                (r, newr) = (newr, r - quotient * newr);
+            }
+
+            if (r > 1)
+                throw new InvalidOperationException("a is not invertible");
+            if (t < 0)
+                t = t + modulus;
+
+            return t;
+        }
+
     }
 }
+
