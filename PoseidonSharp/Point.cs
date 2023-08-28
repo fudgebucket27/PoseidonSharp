@@ -1,40 +1,39 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿
+using System;
 using System.Numerics;
-using System.Text;
 
 namespace PoseidonSharp
 {
     public static class Point
     {
-        private static BigInteger SNARK_SCALAR_FIELD = BigInteger.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
-        public static  (BigInteger, BigInteger) Generator()
+        private static readonly BigInteger SNARK_SCALAR_FIELD = BigInteger.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
+        private static readonly BigInteger ONE = BigInteger.One;
+        private static readonly BigInteger TWO = 2;
+        private static readonly BigInteger JUBJUB_D = BigInteger.Parse("168696");
+        private static readonly BigInteger JUBJUB_A = BigInteger.Parse("168700");
+
+        public static (BigInteger, BigInteger) Generator()
         {
-            (BigInteger x, BigInteger y) points = (BigInteger.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), BigInteger.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
-            return points;
+            return (BigInteger.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"),
+                    BigInteger.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
         }
 
-        public static (BigInteger, BigInteger) Multiply(BigInteger scalar, (BigInteger x, BigInteger y) _points)
+        public static (BigInteger, BigInteger) Multiply(BigInteger scalar, (BigInteger x, BigInteger y) points)
         {
-            (BigInteger x, BigInteger y) p = ((BigInteger x, BigInteger y))_points;
-            (BigInteger x, BigInteger y) a = (BigInteger.Parse("0"), BigInteger.Parse("1"));
-            int i = 0;
+            (BigInteger x, BigInteger y) p = points;
+            (BigInteger x, BigInteger y) result = (0, 1);
+
             while (scalar != 0)
             {
-                BigInteger one = BigInteger.Parse("1");
-                BigInteger result = (scalar & one);
-                if (result != 0)
+                if ((scalar & ONE) != 0)
                 {
-                    a = Add(a, p);
+                    result = Add(result, p);
                 }
                 p = Add(p, p);
-                scalar = BigInteger.DivRem(scalar, 2, out scalar);
-                i += 1;
+                scalar >>= 1;
             }
 
-            return a;
+            return result;
         }
 
         public static (BigInteger x, BigInteger y) Add((BigInteger x, BigInteger y) self, (BigInteger x, BigInteger y) other)
@@ -43,102 +42,71 @@ namespace PoseidonSharp
             {
                 return other;
             }
-            BigInteger one = BigInteger.Parse("1");
-            BigInteger jubJubD = BigInteger.Parse("168696");
-            BigInteger jubJubA = BigInteger.Parse("168700");
-            (BigInteger u1, BigInteger v1) c = (self.x, self.y);
-            (BigInteger u2, BigInteger v2) d = (other.x, other.y);
-
-            /* To replicate this function             
-            BigInteger u3 = (c.u1 * d.v2 + c.v1*d.u2) / (one + jubJubD*c.u1*d.u2*c.v1*d.v2);
-            */
-
-            BigInteger u3Part1 = Multiply(c.u1, d.v2);
-            BigInteger u3Part2 = Multiply(c.v1, d.u2);
-            BigInteger u3Part3 = Add(u3Part1, u3Part2);
-            BigInteger u3Part4 = Multiply(jubJubD, c.u1);
-            BigInteger u3Part5 = Multiply(u3Part4, d.u2);
-            BigInteger u3Part6 = Multiply(u3Part5, c.v1);
-            BigInteger u3Part7 = Multiply(u3Part6, d.v2);
-            BigInteger u3Part8 = Add(one, u3Part7);
-            BigInteger u3Final = Divide(u3Part3, u3Part8);
-
-            /* To replicate this function             
-            BigInteger v3 = (c.v1*d.v2 - jubJubA*c.u1*d.u2) / (one + jubJubD*c.u1*d.u2*c.v1*d.v2);
-            */
-
-            BigInteger v3Part1 = Multiply(c.v1, d.v2);
-            BigInteger v3Part2 = Multiply(jubJubA, c.u1);
-            BigInteger v3Part3 = Multiply(v3Part2, d.u2);
-            BigInteger v3Part4 = Subtract(v3Part1, v3Part3);
-
-            BigInteger v3Part5 = Multiply(jubJubD, c.u1);
-            BigInteger v3Part6 = Multiply(v3Part5, d.u2);
-            BigInteger v3Part7 = Multiply(v3Part6, c.v1);
-            BigInteger v3Part8 = Multiply(v3Part7, d.v2);
-            BigInteger v3Part9 = Subtract(one, v3Part8);
-
-            BigInteger v3Final = Divide(v3Part4, v3Part9);
-
-            (BigInteger x, BigInteger y) points = (u3Final, v3Final);
-            return points;
-        }
-
-        public static (BigInteger, BigInteger) Infinity()
-        {
-            (BigInteger x, BigInteger y) points = (BigInteger.Parse("0"), BigInteger.Parse("1"));
-            return points;
-        }
-
-        public static BigInteger Multiply(BigInteger self, BigInteger other)
-        {
-            (BigInteger m, BigInteger n) points = FQ((self * other) % SNARK_SCALAR_FIELD, SNARK_SCALAR_FIELD);
-            if (points.n.Sign == -1)
+            if (other.x == 0 && other.y == 0)
             {
-                points.n = points.n + SNARK_SCALAR_FIELD;
+                return self;
             }
-            return points.n;
+
+            BigInteger u1 = ModMul(self.x, self.y, SNARK_SCALAR_FIELD);
+            BigInteger u2 = ModMul(other.x, other.y, SNARK_SCALAR_FIELD);
+            BigInteger v1 = ModMul(self.x, other.x, SNARK_SCALAR_FIELD);
+            BigInteger v2 = ModMul(self.y, other.y, SNARK_SCALAR_FIELD);
+
+            BigInteger u = ModMul(u1 + u2, ModInv(TWO + JUBJUB_D * v1 * v2, SNARK_SCALAR_FIELD), SNARK_SCALAR_FIELD);
+            BigInteger v = ModMul(v1 + v2, ModInv(TWO - JUBJUB_A * u1 * u2, SNARK_SCALAR_FIELD), SNARK_SCALAR_FIELD);
+
+            return (u, v);
         }
 
-        public static (BigInteger m, BigInteger n) FQ(BigInteger n, BigInteger fieldModulus)
+        public static (BigInteger x, BigInteger y) Infinity()
         {
-            BigInteger nReturn = n % fieldModulus;
-            if (nReturn.Sign == -1)
-            {
-                nReturn = n + fieldModulus;
-            }
-            return (fieldModulus, nReturn);
+            return (0, 1);
         }
 
         public static BigInteger Add(BigInteger self, BigInteger other)
         {
-            (BigInteger m, BigInteger n) points = FQ((self + other) % SNARK_SCALAR_FIELD, SNARK_SCALAR_FIELD);
-            if (points.n.Sign == -1)
-            {
-                points.n = points.n + SNARK_SCALAR_FIELD;
-            }
-            return points.n;
+            return ModAdd(self, other, SNARK_SCALAR_FIELD);
         }
 
         public static BigInteger Subtract(BigInteger self, BigInteger other)
         {
-            (BigInteger m, BigInteger n) points = FQ((self - other) % SNARK_SCALAR_FIELD, SNARK_SCALAR_FIELD);
-            if (points.n.Sign == -1)
-            {
-                points.n = points.n + SNARK_SCALAR_FIELD;
-            }
-            return points.n;
+            return ModSub(self, other, SNARK_SCALAR_FIELD);
+        }
+
+        public static BigInteger Multiply(BigInteger self, BigInteger other)
+        {
+            return ModMul(self, other, SNARK_SCALAR_FIELD);
         }
 
         public static BigInteger Divide(BigInteger self, BigInteger other)
         {
-            (BigInteger m, BigInteger n) points = FQ((self * BigInteger.ModPow(other, SNARK_SCALAR_FIELD - 2, SNARK_SCALAR_FIELD)) % SNARK_SCALAR_FIELD, SNARK_SCALAR_FIELD);
-            if (points.n.Sign == -1)
-            {
-                points.n = points.n + SNARK_SCALAR_FIELD;
-            }
-            return points.n;
+            return ModMul(self, ModInv(other, SNARK_SCALAR_FIELD), SNARK_SCALAR_FIELD);
         }
 
+        private static BigInteger Mod(BigInteger value, BigInteger modulus)
+        {
+            BigInteger result = value % modulus;
+            return result < 0 ? result + modulus : result;
+        }
+
+        private static BigInteger ModAdd(BigInteger a, BigInteger b, BigInteger modulus)
+        {
+            return Mod(a + b, modulus);
+        }
+
+        private static BigInteger ModSub(BigInteger a, BigInteger b, BigInteger modulus)
+        {
+            return Mod(a - b, modulus);
+        }
+
+        private static BigInteger ModMul(BigInteger a, BigInteger b, BigInteger modulus)
+        {
+            return Mod(a * b, modulus);
+        }
+
+        private static BigInteger ModInv(BigInteger value, BigInteger modulus)
+        {
+            return BigInteger.ModPow(value, modulus - TWO, modulus);
+        }
     }
 }
