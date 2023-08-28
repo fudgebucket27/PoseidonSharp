@@ -3,14 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace PoseidonSharp
 {
     public static class Point
     {
-        private static BigInteger SNARK_SCALAR_FIELD = BigInteger.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
-        public static  (BigInteger, BigInteger) Generator()
+        private static readonly BigInteger SNARK_SCALAR_FIELD = BigInteger.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
+        private static readonly BigInteger ONE = BigInteger.One;
+        private static readonly BigInteger JUBJUB_D = BigInteger.Parse("168696");
+        private static readonly BigInteger JUBJUB_A = BigInteger.Parse("168700");
+        public static (BigInteger, BigInteger) Generator()
         {
             (BigInteger x, BigInteger y) points = (BigInteger.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), BigInteger.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
             return points;
@@ -43,45 +47,30 @@ namespace PoseidonSharp
             {
                 return other;
             }
-            BigInteger one = BigInteger.Parse("1");
-            BigInteger jubJubD = BigInteger.Parse("168696");
-            BigInteger jubJubA = BigInteger.Parse("168700");
-            (BigInteger u1, BigInteger v1) c = (self.x, self.y);
-            (BigInteger u2, BigInteger v2) d = (other.x, other.y);
 
-            /* To replicate this function             
-            BigInteger u3 = (c.u1 * d.v2 + c.v1*d.u2) / (one + jubJubD*c.u1*d.u2*c.v1*d.v2);
-            */
+            BigInteger u1v2 = Multiply(self.x, other.y);
+            BigInteger v1u2 = Multiply(self.y, other.x);
+            BigInteger sumUV = Add(u1v2, v1u2);
 
-            BigInteger u3Part1 = Multiply(c.u1, d.v2);
-            BigInteger u3Part2 = Multiply(c.v1, d.u2);
-            BigInteger u3Part3 = Add(u3Part1, u3Part2);
-            BigInteger u3Part4 = Multiply(jubJubD, c.u1);
-            BigInteger u3Part5 = Multiply(u3Part4, d.u2);
-            BigInteger u3Part6 = Multiply(u3Part5, c.v1);
-            BigInteger u3Part7 = Multiply(u3Part6, d.v2);
-            BigInteger u3Part8 = Add(one, u3Part7);
-            BigInteger u3Final = Divide(u3Part3, u3Part8);
+            BigInteger du1 = Multiply(JUBJUB_D, self.x);
+            BigInteger du1u2 = Multiply(du1, other.x);
+            BigInteger du1u2v1 = Multiply(du1u2, self.y);
+            BigInteger du1u2v1v2 = Multiply(du1u2v1, other.y);
+            BigInteger denominatorU3 = Add(ONE, du1u2v1v2);
 
-            /* To replicate this function             
-            BigInteger v3 = (c.v1*d.v2 - jubJubA*c.u1*d.u2) / (one + jubJubD*c.u1*d.u2*c.v1*d.v2);
-            */
+            BigInteger u3Inverse = ExtendedEuclideanInverse(denominatorU3, SNARK_SCALAR_FIELD);
+            BigInteger u3 = Multiply(sumUV, u3Inverse);
 
-            BigInteger v3Part1 = Multiply(c.v1, d.v2);
-            BigInteger v3Part2 = Multiply(jubJubA, c.u1);
-            BigInteger v3Part3 = Multiply(v3Part2, d.u2);
-            BigInteger v3Part4 = Subtract(v3Part1, v3Part3);
+            BigInteger v1v2 = Multiply(self.y, other.y);
+            BigInteger au1 = Multiply(JUBJUB_A, self.x);
+            BigInteger au1u2 = Multiply(au1, other.x);
+            BigInteger differenceV = Subtract(v1v2, au1u2);
 
-            BigInteger v3Part5 = Multiply(jubJubD, c.u1);
-            BigInteger v3Part6 = Multiply(v3Part5, d.u2);
-            BigInteger v3Part7 = Multiply(v3Part6, c.v1);
-            BigInteger v3Part8 = Multiply(v3Part7, d.v2);
-            BigInteger v3Part9 = Subtract(one, v3Part8);
+            BigInteger du1u2v1v2Difference = Subtract(ONE, du1u2v1v2);
+            BigInteger v3Inverse = ExtendedEuclideanInverse(du1u2v1v2Difference, SNARK_SCALAR_FIELD);
+            BigInteger v3 = Multiply(differenceV, v3Inverse);
 
-            BigInteger v3Final = Divide(v3Part4, v3Part9);
-
-            (BigInteger x, BigInteger y) points = (u3Final, v3Final);
-            return points;
+            return (u3, v3);
         }
 
         public static (BigInteger, BigInteger) Infinity()
@@ -92,53 +81,49 @@ namespace PoseidonSharp
 
         public static BigInteger Multiply(BigInteger self, BigInteger other)
         {
-            (BigInteger m, BigInteger n) points = FQ((self * other) % SNARK_SCALAR_FIELD, SNARK_SCALAR_FIELD);
-            if (points.n.Sign == -1)
-            {
-                points.n = points.n + SNARK_SCALAR_FIELD;
-            }
-            return points.n;
+            return FQ(self * other, SNARK_SCALAR_FIELD);
         }
 
-        public static (BigInteger m, BigInteger n) FQ(BigInteger n, BigInteger fieldModulus)
+        public static BigInteger FQ(BigInteger n, BigInteger fieldModulus)
         {
             BigInteger nReturn = n % fieldModulus;
             if (nReturn.Sign == -1)
             {
-                nReturn = n + fieldModulus;
+                nReturn += fieldModulus;
             }
-            return (fieldModulus, nReturn);
+            return nReturn;
         }
 
         public static BigInteger Add(BigInteger self, BigInteger other)
         {
-            (BigInteger m, BigInteger n) points = FQ((self + other) % SNARK_SCALAR_FIELD, SNARK_SCALAR_FIELD);
-            if (points.n.Sign == -1)
-            {
-                points.n = points.n + SNARK_SCALAR_FIELD;
-            }
-            return points.n;
+            return FQ(self + other, SNARK_SCALAR_FIELD);
         }
 
         public static BigInteger Subtract(BigInteger self, BigInteger other)
         {
-            (BigInteger m, BigInteger n) points = FQ((self - other) % SNARK_SCALAR_FIELD, SNARK_SCALAR_FIELD);
-            if (points.n.Sign == -1)
-            {
-                points.n = points.n + SNARK_SCALAR_FIELD;
-            }
-            return points.n;
+            return FQ(self - other, SNARK_SCALAR_FIELD);
         }
 
-        public static BigInteger Divide(BigInteger self, BigInteger other)
+        public static BigInteger ExtendedEuclideanInverse(BigInteger a, BigInteger modulus)
         {
-            (BigInteger m, BigInteger n) points = FQ((self * BigInteger.ModPow(other, SNARK_SCALAR_FIELD - 2, SNARK_SCALAR_FIELD)) % SNARK_SCALAR_FIELD, SNARK_SCALAR_FIELD);
-            if (points.n.Sign == -1)
+            BigInteger t = 0, newt = 1;
+            BigInteger r = modulus, newr = a;
+            while (newr != 0)
             {
-                points.n = points.n + SNARK_SCALAR_FIELD;
+                BigInteger quotient = r / newr;
+
+                (t, newt) = (newt, t - quotient * newt);
+                (r, newr) = (newr, r - quotient * newr);
             }
-            return points.n;
+
+            if (r > 1)
+                throw new InvalidOperationException("a is not invertible");
+            if (t < 0)
+                t = t + modulus;
+
+            return t;
         }
 
     }
 }
+

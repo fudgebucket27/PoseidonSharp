@@ -30,8 +30,24 @@ namespace PoseidonTests
         }
 
         [TestMethod]
-        [Description("Poseidon hash test for multiple inputs")]
+        [Description("Poseidon hash test for multiple large inputs")]
         public void PoseidonHashTest3()
+        {
+            BigInteger[] inputs = {
+                BigInteger.Parse("14018714854885098128064817341184136022863799846023165041562300563859625887667"),
+                BigInteger.Parse("14018714854885098128064817341184136022863799846023165041562300563859625887667"),
+                BigInteger.Parse("14018714854885098128064817341184136022863799846023165041562300563859625887667"),
+                BigInteger.Parse("14018714854885098128064817341184136022863799846023165041562300563859625887667"),
+                BigInteger.Parse("14018714854885098128064817341184136022863799846023165041562300563859625887667"),
+                BigInteger.Parse("14018714854885098128064817341184136022863799846023165041562300563859625887667")
+            };
+            Poseidon poseidon = new Poseidon(inputs.Length + 1, 6, 53, "poseidon", 5, _securityTarget: 128);
+            BigInteger poseidonHash = poseidon.CalculatePoseidonHash(inputs);
+        }
+
+        [TestMethod]
+        [Description("Poseidon hash test for multiple inputs")]
+        public void PoseidonHashTest4()
         {
             int MAX_INPUT = 13;
             Poseidon poseidon = new Poseidon(MAX_INPUT + 1, 6, 53, "poseidon", 5, _securityTarget: 128);
@@ -46,6 +62,8 @@ namespace PoseidonTests
             BigInteger poseidonHash = poseidon.CalculatePoseidonHash(inputs);
             Assert.AreEqual(BigInteger.Parse("12787485214590893264756354332223190110048608099767720695619651876987364797309"), poseidonHash, "Hashes don't match!");
         }
+
+
 
         [TestMethod]
         [Description("SHA256Helper hash test for GET request")]

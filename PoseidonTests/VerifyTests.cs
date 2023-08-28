@@ -16,7 +16,7 @@ namespace PoseidonTests
         private static string PrivateKey3 = "0x4485ade3c570854e240c72e9a9162e629f8e30db4d8130856da31787e7400f0"; //This private key has been unpaired from the real account
         [TestMethod]
         [Description("Hash and sign with first private key, it generates a negative big integer from the private key and generates a byte array of 32")]
-        public void PoseidonEddsaVerifyTest1() 
+        public void PoseidonEddsaVerifyTest1()
         {
             int MAX_INPUT = 13;
             Poseidon poseidon = new Poseidon(MAX_INPUT + 1, 6, 53, "poseidon", 5, _securityTarget: 128);
