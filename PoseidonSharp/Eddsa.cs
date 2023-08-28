@@ -62,19 +62,6 @@ namespace PoseidonSharp
             return finalSignedMessage;
         }
 
-        public bool Verify(SignedMessage signedMessage)
-        {
-            var A = signedMessage.A;
-            var sig = signedMessage.Signature;
-            var msg = signedMessage.Message;
-            var B = (BigInteger.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), BigInteger.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
-            var lhs = Point.Multiply(sig.S, B);
-            var hashPublic = HashPublic(sig.R, A, OriginalHash);
-            var aMultiplyHashPublic = Point.Multiply(hashPublic, A);
-            var rhs = Point.Add(sig.R, aMultiplyHashPublic);
-            return lhs == rhs;
-        }
-
         private BigInteger HashPublic((BigInteger x, BigInteger y) r, (BigInteger x, BigInteger y) a, BigInteger m)
         {
             BigInteger[] inputs = { r.x, r.y, a.x, a.y, m};
