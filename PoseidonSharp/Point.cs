@@ -104,9 +104,30 @@ namespace PoseidonSharp
             return Mod(a * b, modulus);
         }
 
-        private static BigInteger ModInv(BigInteger value, BigInteger modulus)
+        private static BigInteger ModInv(BigInteger a, BigInteger modulus)
         {
-            return BigInteger.ModPow(value, modulus - TWO, modulus);
+            BigInteger t = 0, newT = 1;
+            BigInteger r = modulus, newR = a;
+
+            while (newR != 0)
+            {
+                BigInteger quotient = r / newR;
+
+                (t, newT) = (newT, t - quotient * newT);
+                (r, newR) = (newR, r - quotient * newR);
+            }
+
+            if (r > 1)
+            {
+                throw new ArgumentException("a is not invertible");
+            }
+
+            if (t < 0)
+            {
+                t = t + modulus;
+            }
+
+            return t;
         }
     }
 }

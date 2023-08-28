@@ -10,6 +10,8 @@ namespace PoseidonConsole
 {
     class Program
     {
+        private static string PrivateKey2 = "0x19bd8d52d552d2f112b478686f18577b8088e5b1860c3523c53f943304951c3"; //This private key has been unpaired from the real account
+
         static void Main(string[] args)
         {
             //Test case 3
@@ -44,6 +46,13 @@ namespace PoseidonConsole
             //BigInteger pHash11 = poseidon11.CalculatePoseidonHash(inputs1);
             //BigInteger pHash12 = poseidon12.CalculatePoseidonHash(inputs1);
             //BigInteger pHash13 = poseidon13.CalculatePoseidonHash(inputs1);
+
+            int MAX_INPUT = 13;
+            Poseidon poseidon = new Poseidon(MAX_INPUT + 1, 6, 53, "poseidon", 5, _securityTarget: 128);
+            BigInteger[] inputs = { BigInteger.Parse("95262223708097584402615283257936266522564860189809682357548133077263290491192") };
+            BigInteger poseidonHash = poseidon.CalculatePoseidonHash(inputs);
+            Eddsa eddsa = new Eddsa(poseidonHash, PrivateKey2);
+            string signedMessage = eddsa.Sign();
 
 
 
