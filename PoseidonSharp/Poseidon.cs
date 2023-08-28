@@ -75,7 +75,14 @@ namespace PoseidonSharp
             {
                 string constantsCseed = _seed + "_constants";
                 byte[] constantsCseedBytes = Encoding.ASCII.GetBytes(constantsCseed);
-                ConstantsC = ConstantsHelper.ConstantsC59;
+                if (_nRoundsF + _nRoundsP == 58)
+                {
+                    ConstantsC = ConstantsHelper.ConstantsC58;
+                }
+                else
+                {
+                    ConstantsC = ConstantsHelper.ConstantsC59;
+                }
             }
       
 
@@ -135,7 +142,7 @@ namespace PoseidonSharp
                seedBigInt = CalculateBlake2BHash(seedBigInt);
                poseidonConstants.Add(seedBigInt % p);
             }
-            /*
+            
             StringBuilder output = new StringBuilder();
             output.AppendLine($"public static List<BigInteger> ConstantsC{nRounds}" +  " = new List<BigInteger>(){");
             int count = 0;
@@ -153,7 +160,7 @@ namespace PoseidonSharp
             }
             output.AppendLine("};");
             Console.WriteLine(output.ToString());
-            */
+            
             return poseidonConstants;
         }
 

@@ -23,7 +23,7 @@ namespace PoseidonSharp
         {
             OriginalHash = _originalHash;
             BigInteger privateKeyBigInteger = BigInteger.Parse(_privateKey.Substring(2, _privateKey.Length - 2), NumberStyles.AllowHexSpecifier);
-            if(privateKeyBigInteger.Sign == -1) //hex parse in big integer can make a negative number so we need to convert as below
+            if (privateKeyBigInteger.Sign == -1) //hex parse in big integer can make a negative number so we need to convert as below
             {
                 string privateKeyAsPositiveHexString = "0" + _privateKey.Substring(2, _privateKey.Length - 2); //add a zero to the front of the string to make it positive
                 privateKeyBigInteger = BigInteger.Parse(privateKeyAsPositiveHexString, NumberStyles.AllowHexSpecifier);
@@ -40,7 +40,7 @@ namespace PoseidonSharp
             }
             else
             {
-                B = (BigInteger.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), BigInteger.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
+                B = Point.Generator();
             }
 
             (BigInteger x, BigInteger y) A = Point.Multiply(PrivateKey, B);
@@ -55,16 +55,29 @@ namespace PoseidonSharp
 
             Signature signature = new Signature(R, S);
             SignedMessage signedMessage = new SignedMessage(A, signature, OriginalHash);
-            string rX = signedMessage.Signature.R.x.ToString("x").PadLeft(64,'0');
+            string rX = signedMessage.Signature.R.x.ToString("x").PadLeft(64, '0');
             string rY = signedMessage.Signature.R.y.ToString("x").PadLeft(64, '0');
             string rS = signedMessage.Signature.S.ToString("x").PadLeft(64, '0');
             string finalSignedMessage = "0x" + rX + rY + rS;
             return finalSignedMessage;
         }
 
+        public bool Verify(SignedMessage signedMessage)
+        {
+            var A = signedMessage.A;
+            var sig = signedMessage.Signature;
+            var msg = signedMessage.Message;
+            var B = Point.Generator();
+            var lhs = Point.Multiply(sig.S, B);
+            var hashPublic = HashPublic(sig.R, A, OriginalHash);
+            var aMultiplyHashPublic = Point.Multiply(hashPublic, A);
+            var rhs = Point.Add(sig.R, aMultiplyHashPublic);
+            return lhs == rhs;
+        }
+
         private BigInteger HashPublic((BigInteger x, BigInteger y) r, (BigInteger x, BigInteger y) a, BigInteger m)
         {
-            BigInteger[] inputs = { r.x, r.y, a.x, a.y, m};
+            BigInteger[] inputs = { r.x, r.y, a.x, a.y, m };
             Poseidon poseidon = new Poseidon(6, 6, 52, "poseidon", 5, _securityTarget: 128);
             return poseidon.CalculatePoseidonHash(inputs);
         }
@@ -89,13 +102,13 @@ namespace PoseidonSharp
             sha512HashBytes = sha512Managed.ComputeHash(combinedPrivateKeyAndPoseidonHashBytes);
 
             BigInteger sha512HashedNumber = new BigInteger(sha512HashBytes);
-            if(sha512HashedNumber.Sign == -1) //sha512 in bytes is a hex number so sometimes can return negative
+            if (sha512HashedNumber.Sign == -1) //sha512 in bytes is a hex number so sometimes can return negative
             {
                 string sha512HexString = "0" + sha512HashedNumber.ToString("x"); //add a zero to the front of the hex string to make it a  positive number
                 sha512HashedNumber = BigInteger.Parse(sha512HexString, NumberStyles.AllowHexSpecifier);
             }
 
-            BigInteger result = sha512HashedNumber %  JUBJUB_L;
+            BigInteger result = sha512HashedNumber % JUBJUB_L;
             if (result.Sign == -1)
             {
                 result = result + JUBJUB_L;
