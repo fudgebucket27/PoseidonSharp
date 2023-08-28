@@ -11,17 +11,15 @@ The included PoseidonConsole project contains some demo code on how to use the l
 ## Adding PoseidonSharp to your project
 You can either submodule this repository or add it as a dependency to your project via NuGet Package Manager in Visual Studio with the following command:
 
-    Install-Package PoseidonSharp -Version 1.0.1
+    Install-Package PoseidonSharp -Version 1.0.4
 
 ## Important
 
-1. The private key in PoseidonConsole for EDDSA is pulled from a user environment variable named "LoopringPrivateKey". It needs to be in a hex format, ie "0x1232blahblah".The demo signing tests in PoseidonConsole will fail the assertions because they are using MY private key.
+1. The MAX_INPUT variable is important as you will get a different poseidon hash based on this value. Set it to the length of your BigInteger array inputs. So 3 elements would mean a MAX_INPUT of 3. We then also add 1 when passing the MAX_INPUT as the first parameter to the Poseidon class constructor.
 
-2. The MAX_INPUT variable is important as you will get a different poseidon hash based on this value. Set it to the length of your BigInteger array inputs. So 3 elements would mean a MAX_INPUT of 3. We then also add 1 when passing the MAX_INPUT as the first parameter to the Poseidon class constructor.
+2. The EDDSA signed message back is (0x + Rx+  Ry + S) and is specific to Loopring
 
-3. The EDDSA signed message back is (0x + Rx+  Ry + S) and is specific to Loopring
-
-4. Signed Messages can be verified with the Verify method from the Eddsa class like below:
+3. Signed Messages can be verified with the Verify method from the Eddsa class like below:
 
 ```csharp
 //Verify Correct Key Is Used
@@ -87,7 +85,11 @@ static void Main(string[] args)
 ```
 
 # Thanks to
-[Taranasus](https://github.com/taranasus) for code contributions and reviewing. [Saucecontrol](https://github.com/saucecontrol) for the Blake2Fast library.
+[Taranasus](https://github.com/taranasus) for code contributions and reviewing. 
+
+[Leppaludi](https://github.com/leppaludi) for the idea of precalculating the poseidon constant and matrix which lead to a signficiant speed increase for hashing.
+
+[Saucecontrol](https://github.com/saucecontrol) for the Blake2Fast library. 
 
 ## License
 Fork this repo and do what you want with it! If you like my work and want to buy me a beer you can send me some ethereum to fudgey.eth or loopring to fudgey.loopring.eth ;)
