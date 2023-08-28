@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>fudgey.eth</Authors>
     <Description>This is a Poseidon Hashing Library built for use with Loopring</Description>
-    <Version>1.0.4-alpha</Version>
+    <Version>1.0.5</Version>
     <PackageProjectUrl>https://github.com/fudgebucket27/PoseidonSharp</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fudgebucket27/PoseidonSharp</RepositoryUrl>
