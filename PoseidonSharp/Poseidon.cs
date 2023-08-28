@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Threading;
 using Blake2Fast;
 
 namespace PoseidonSharp
@@ -69,12 +70,14 @@ namespace PoseidonSharp
             Debug.Assert((_nRoundsF + _nRoundsP) > ((2 + Math.Min(M, n)) * grobnerAttackRatioRounds), "(nRoundsF + nRoundsP) > ((2 + min(M, n)) * grobner_attack_ratio_rounds)");
             Debug.Assert((_nRoundsF + (_t * _nRoundsP)) > (M * grobnerAttackRatioSBoxes), "(nRoundsF + (t * nRoundsP)) > (M * grobner_attack_ratio_sboxes)");
 
+    
             if (_constantsC == null)
             {
                 string constantsCseed = _seed + "_constants";
                 byte[] constantsCseedBytes = Encoding.ASCII.GetBytes(constantsCseed);
-                ConstantsC = CalculatePoseidonConstants(SNARK_SCALAR_FIELD, constantsCseedBytes, _nRoundsF + _nRoundsP);
+                ConstantsC = ConstantsHelper.ConstantsC59;
             }
+      
 
             if (_constantsM == null)
             {
@@ -132,16 +135,124 @@ namespace PoseidonSharp
                seedBigInt = CalculateBlake2BHash(seedBigInt);
                poseidonConstants.Add(seedBigInt % p);
             }
+            /*
+            StringBuilder output = new StringBuilder();
+            output.AppendLine($"public static List<BigInteger> ConstantsC{nRounds}" +  " = new List<BigInteger>(){");
+            int count = 0;
+            foreach(var poseidonConstant in poseidonConstants)
+            {
+                count++;
+                if (count != poseidonConstants.Count)
+                {
+                    output.AppendLine($"BigInteger.Parse(\"{poseidonConstant.ToString()}\"),");
+                }
+                else
+                {
+                    output.AppendLine($"BigInteger.Parse(\"{poseidonConstant.ToString()}\")");
+                }
+            }
+            output.AppendLine("};");
+            Console.WriteLine(output.ToString());
+            */
             return poseidonConstants;
         }
 
         private List<List<BigInteger>> CalculatePoseidonMatrix(BigInteger p, byte[] seed, int t)
         {
-            List<BigInteger> constants = CalculatePoseidonConstants(p, seed, t * 2);
-            List<List<BigInteger>> poseidonMatrix = new List<List<BigInteger>>();
-            BigInteger two = BigInteger.Parse("2");
+            List<BigInteger> constants = null;
+            switch(t * 2)
+            {
+                case 4:
+                    constants = ConstantsHelper.ConstantsC4;
+                    break;
+                case 6:
+                    constants = ConstantsHelper.ConstantsC6;
+                    break;
+                case 8:
+                    constants = ConstantsHelper.ConstantsC8;
+                    break;
+                case 10:
+                    constants = ConstantsHelper.ConstantsC10;
+                    break;
+                case 12:
+                    constants = ConstantsHelper.ConstantsC12;
+                    break;
+                case 14:
+                    constants = ConstantsHelper.ConstantsC14;
+                    break;
+                case 16:
+                    constants = ConstantsHelper.ConstantsC16;
+                    break;
+                case 18:
+                    constants = ConstantsHelper.ConstantsC18;
+                    break;
+                case 20:
+                    constants = ConstantsHelper.ConstantsC20;
+                    break;
+                case 22:
+                    constants = ConstantsHelper.ConstantsC22;
+                    break;
+                case 24:
+                    constants = ConstantsHelper.ConstantsC24;
+                    break;
+                case 26:
+                    constants = ConstantsHelper.ConstantsC26;
+                    break;
+                case 28:
+                    constants = ConstantsHelper.ConstantsC28;
+                    break;
+            }
+            //StringBuilder sb = new StringBuilder();
+            List<List<BigInteger>> poseidonMatrix = null;
+            switch (t)
+            {
+                case 2:
+                    poseidonMatrix = ConstantsHelper.ConstantsM2;
+                    break;
+                case 3:
+                    poseidonMatrix = ConstantsHelper.ConstantsM3;
+                    break;
+                case 4:
+                    poseidonMatrix = ConstantsHelper.ConstantsM4;
+                    break;
+                case 5:
+                    poseidonMatrix = ConstantsHelper.ConstantsM5;
+                    break;
+                case 6:
+                    poseidonMatrix = ConstantsHelper.ConstantsM6;
+                    break;
+                case 7:
+                    poseidonMatrix = ConstantsHelper.ConstantsM7;
+                    break;
+                case 8:
+                    poseidonMatrix = ConstantsHelper.ConstantsM8;
+                    break;
+                case 9:
+                    poseidonMatrix = ConstantsHelper.ConstantsM9;
+                    break;
+                case 10:
+                    poseidonMatrix = ConstantsHelper.ConstantsM10;
+                    break;
+                case 11:
+                    poseidonMatrix = ConstantsHelper.ConstantsM11;
+                    break;
+                case 12:
+                    poseidonMatrix = ConstantsHelper.ConstantsM12;
+                    break;
+                case 13:
+                    poseidonMatrix = ConstantsHelper.ConstantsM13;
+                    break;
+                case 14:
+                    poseidonMatrix = ConstantsHelper.ConstantsM14;
+                    break;
+            }
+            /*
+            BigInteger two = BigInteger.Parse("2"); 
+            //sb.AppendLine($"public static List<List<BigInteger>> ConstantsM{t} = new List<List<BigInteger>>");
+            //sb.AppendLine("{");
             for (int i = 0; i < t; i++)
             {
+                //sb.Append("    new List<BigInteger> { ");
                 List<BigInteger> bigIntegers = new List<BigInteger>();
                 for (int j = 0; j < t; j++)
                 {
@@ -151,10 +262,16 @@ namespace PoseidonSharp
                     {
                         result = result + p;
                     }
+                    //sb.Append($"BigInteger.Parse(\"{result}\")");
                     bigIntegers.Add(result);
+                    //if (j < t - 1) sb.Append(", ");
                 }
+                //sb.AppendLine(" },");
                 poseidonMatrix.Add(bigIntegers);
             }
+            //sb.AppendLine("};");
+            //Console.WriteLine(sb.ToString());
+            */
             return poseidonMatrix;
         }
 
