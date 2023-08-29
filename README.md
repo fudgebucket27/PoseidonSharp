@@ -22,16 +22,17 @@ You can either submodule this repository or add it as a dependency to your proje
 3. Signed Messages can be verified with the Verify method from the Eddsa class like below:
 
 ```csharp
-//Verify Correct Key Is Used
-Signature signatureObject = EddsaHelper.SignatureStringToSignatureObject(signedMessage);
-BigInteger privateKeyBigInteger = EddsaHelper.PrivateKeyHexStringToBigInteger(PrivateKey);
-SignedMessage verifySignedMessage = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigInteger), signatureObject, poseidonHash);
-Assert.IsTrue(eddsa.Verify(verifySignedMessage));
+    using NeinMath;
+  //Verify Correct Key Is Used
+            BigInteger privateKeyBigInteger = EddsaHelper.PrivateKeyHexStringToBigInteger(PrivateKey3);
+            Signature signatureObject = EddsaHelper.SignatureStringToSignatureObject(signedMessage);
+            SignedMessage verifySignedMessage = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigInteger), signatureObject, Integer.Parse(poseidonHash.ToString()));
+            Assert.IsTrue(eddsa.Verify(verifySignedMessage));
 
-//Verify Incorrect Key Is used
-BigInteger privateKeyBigIntegerIncorrect = EddsaHelper.PrivateKeyHexStringToBigInteger(PrivateKey2);
-SignedMessage verifySignedMessageIncorrect = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigIntegerIncorrect), signatureObject, poseidonHash);
-Assert.IsFalse(eddsa.Verify(verifySignedMessageIncorrect));
+            //Verify Incorrect Key Is used
+            BigInteger privateKeyBigIntegerIncorrect = EddsaHelper.PrivateKeyHexStringToBigInteger(PrivateKey);
+            SignedMessage verifySignedMessageIncorrect = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigIntegerIncorrect), signatureObject, Integer.Parse(poseidonHash.ToString()));
+            Assert.IsFalse(eddsa.Verify(verifySignedMessageIncorrect));
 ```
 
 ## Demo Code
