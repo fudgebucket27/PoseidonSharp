@@ -11,11 +11,10 @@ The included PoseidonConsole project contains some demo code on how to use the l
 ## Adding PoseidonSharp to your project
 You can either submodule this repository or add it as a dependency to your project via NuGet Package Manager in Visual Studio with the following command:
 
-    Install-Package PoseidonSharp -Version 1.0.6
+    Install-Package PoseidonSharp -Version 1.0.7
 
 ## Important
-
-1. When passing BigInteger array inputs to Poseidon use the length of the input + 1
+1. When passing BigInteger array inputs to Poseidon use the length of the input array + 1
 
 2. The EDDSA signed message back is (0x + Rx+  Ry + S) and is specific to Loopring
 
@@ -34,55 +33,26 @@ You can either submodule this repository or add it as a dependency to your proje
             SignedMessage verifySignedMessageIncorrect = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigIntegerIncorrect), signatureObject, Integer.Parse(poseidonHash.ToString()));
             Assert.IsFalse(eddsa.Verify(verifySignedMessageIncorrect));
 ```
-
-## Demo Code
+4. In version 1.0.7 and above there is a helper method for generating the Loopring L2 Details. Look at the following demo code to see how it works.
 ```csharp
-using System;
-using System.Diagnostics;
-using System.Numerics;
-using PoseidonSharp;
+           //Generating the l2 key details in this block
+            var messageToSign = "Sign this message to access Loopring Exchange: 0x0BABA1Ad5bE3a5C0a66E7ac838a129Bf948f1eA4 with key nonce: 0";
+            var l1PrivateKey = "8fe76a950a68a723e9ecd0c256045266e94ed5a1e846ca2112a9ecb61c1d28db";
+            var ethAddress = "0x991B6fE54d46e5e0CEEd38911cD4a8694bed386A";
+            var skipPublicKeyCalculation = false; //set to false to generate the public key details as well, set to true to skip public key generation which makes it run faster
 
-static void Main(string[] args)
-{
-  int MAX_INPUT = 1;
-  Poseidon poseidon = new Poseidon(MAX_INPUT + 1,6,53,"poseidon",5, _securityTarget: 128); //Initiate new poseidon
-  
-  //Test case 1
-  BigInteger[] inputs = { BigInteger.Parse("19254303773071461417973161554248988464997154230097311673556244912844777390355") };//Max Input should be the number of BigInteger inputs
-  BigInteger testOnePoseidonHash = poseidon.CalculatePoseidonHash(inputs);
-  Debug.Assert(testOnePoseidonHash == BigInteger.Parse("7641334598873409723829611087914304630148005125097433494966402842069929245490"), "Hash doesn't match expected hash!");
-  Console.WriteLine($"Hash of test one is {testOnePoseidonHash}");
-  Eddsa eddsa = new Eddsa(testOnePoseidonHash, Environment.GetEnvironmentVariable("LoopringPrivateKey", EnvironmentVariableTarget.User)); //Put in the calculated poseidon hash in order to Sign
-  string signedMessage = eddsa.Sign();
-  Debug.Assert(signedMessage == "0x19bdf78654e45f513e3d983c4fa0f90c222ffb37ff1772d6955961f8f414d8f32945dea53a2d12bdcab3a5facaa695503e73608ed75988bfe0df9ae8413bab022e070e3025a288e70f6305e9c44f51480ddc712d8be59870ad0acfdcce9aaa05", "Signed message doesn't match expected signed message");
-  Console.WriteLine($"Signed message: {signedMessage}");
-  
-  //Test case 2
-  int MAX_INPUT_TWO = 4; //Max Input should be the number of BigInteger inputs
-  Poseidon poseidonTwo = new Poseidon(MAX_INPUT_TWO + 1, 6, 53, "poseidon", 5, _securityTarget: 128);
-  BigInteger[] inputsTwo = { BigInteger.Parse("1233333333333333"), BigInteger.Parse("9400000000000000000000000000"), BigInteger.Parse("1223123"), BigInteger.Parse("544343434343434343") };
-  BigInteger testTwoPoseidonHash = poseidonTwo.CalculatePoseidonHash(inputsTwo);
-  Debug.Assert(testTwoPoseidonHash == BigInteger.Parse("3642840179269730552612336878249257609263354431767353053799083195998559566113"), "Hash doesn't match expected hash!");
-  Console.WriteLine($"Hash of test two is {testTwoPoseidonHash}");
-  Eddsa eddsaTwo = new Eddsa(testTwoPoseidonHash, Environment.GetEnvironmentVariable("LoopringPrivateKey", EnvironmentVariableTarget.User)); //Put in the calculated poseidon hash in order to Sign
-  string signedMessageTwo = eddsaTwo.Sign();
-  Debug.Assert(signedMessageTwo == "0x0b60e3d275b059b7a7f485e8182b32de7d842090b828e0471aad2fee4ad1f58c246cb6d8b538fe9929993b44a86ea90f50bdd346db600c193e1a8c62340a6d871f5aa69ca257feea363ab9b55ca52372f1fcd404964f27c3bae07e5d8f46d53a", "Signed message doesn't match expected signed message");
-  Console.WriteLine($"Signed message: {signedMessageTwo}");
-
-  
-  //Test case for signed message of get api key url
-  //Calculate sha256 specific to loopring of url
-  BigInteger testOneInput = SHA256Helper.CalculateSHA256HashNumber("GET&https%3A%2F%2Fuat3.loopring.io%2Fapi%2Fv3%2FapiKey&accountId%3D11087");
-  Debug.Assert(testOneInput == BigInteger.Parse("19400808358061590369279192378878962429412529891699423035130831734199348072763"), "Hash doesn't match expected hash!");
-  Console.WriteLine($"Hash of test one is {testOneInput}");
-  Eddsa eddsaThree = new Eddsa(testOneInput, Environment.GetEnvironmentVariable("LoopringPrivateKey", EnvironmentVariableTarget.User)); //Put in the calculated poseidon hash in order to Sign
-  string signedMessageThree = eddsaThree.Sign();
-  Debug.Assert(signedMessageThree == "0x02cd51ee31c9d63e6d9796704249fbccaba8fd287e4c7d412bc4d6d88801bb0a067de03f99a1a1194a098522e686a1940024946535d45cbbd02b3bb38722d9f02fa6e5be861a24168738837e7b7f38e4379b26a54a60673afde303e75f47b769", "Signed message doesn't match expected signed message");
-  Console.WriteLine($"Signed message: {signedMessageThree}");
-  
-  Console.WriteLine("Enter to exit");
-  Console.ReadKey();
-}
+            var signer = new EthereumMessageSigner();
+            var signedMessageECDSA = signer.EncodeUTF8AndSign(messageToSign, new EthECKey(l1PrivateKey));
+            var l2KeyDetails = LoopringL2KeyGenerator.GenerateL2KeyDetails(signedMessageECDSA, ethAddress, skipPublicKeyCalculation);
+            Assert.AreEqual("0x0ec8709bb559eb1a38da8331039d979a46b9b8e9b399ab1adf477d55630f485d", l2KeyDetails.publicKeyX);
+            Assert.AreEqual("0x064ab5befba8359524fa0c16021660870266ef62edc6aee52d75aece9057323a", l2KeyDetails.publicKeyY);
+            Assert.AreEqual("0x03630456a1f23e7d61eb0f52e4abb67761417c1663320f133e15fe3111f6ef3b", l2KeyDetails.secretKey); //this is the l2 private key
+            
+            //Generating the x-api-sig header details for the get loopring api key endpoint
+            string apiSignatureBase = "GET&https%3A%2F%2Fapi3.loopring.io%2Fapi%2Fv3%2FapiKey&accountId%3D" + 136736;
+            BigInteger apiSignatureBaseBigInteger = SHA256Helper.CalculateSHA256HashNumber(apiSignatureBase);
+            Eddsa eddsa = new Eddsa(apiSignatureBaseBigInteger, l2KeyDetails.secretKey);
+            var xApiSig = eddsa.Sign(); //Add this string as the x-api-sig header in the request to the get loopring api key endpoint
 ```
 
 # Thanks to
