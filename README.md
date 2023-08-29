@@ -28,13 +28,13 @@ You can either submodule this repository or add it as a dependency to your proje
             //Verify Correct Key Is Used
             BigInteger privateKeyBigInteger = EddsaHelper.PrivateKeyHexStringToBigInteger(PrivateKey3);
             Signature signatureObject = EddsaHelper.SignatureStringToSignatureObject(signedMessage);
-            SignedMessage verifySignedMessage = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigInteger), signatureObject, Integer.Parse(poseidonHash.ToString()));
-            Assert.IsTrue(eddsa.Verify(verifySignedMessage));
+            SignedMessage verifySignedMessage = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigInteger), signatureObject, Integer.Parse(poseidonHash.ToString())); 
+            bool verifyTrue = eddsa.Verify(verifySignedMessage);
 
             //Verify Incorrect Key Is used
             BigInteger privateKeyBigIntegerIncorrect = EddsaHelper.PrivateKeyHexStringToBigInteger(PrivateKey);
             SignedMessage verifySignedMessageIncorrect = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigIntegerIncorrect), signatureObject, Integer.Parse(poseidonHash.ToString()));
-            Assert.IsFalse(eddsa.Verify(verifySignedMessageIncorrect));
+            bool verifyFalse = eddsa.Verify(verifySignedMessageIncorrect);
 ```
 4. In version 1.0.7 and above there is a helper method for generating the Loopring L2 Details. Look at the following demo code to see how it works.
 ```csharp
