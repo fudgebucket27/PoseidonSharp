@@ -59,6 +59,8 @@ You can either submodule this repository or add it as a dependency to your proje
             var xApiSig = eddsa.Sign(); //Add this string as the x-api-sig header in the request to the get loopring api key endpoint
 ```
 
+5. View the tests: https://github.com/fudgebucket27/PoseidonSharp/tree/master/PoseidonTests to see additional examples on how to use this library
+
 # Thanks to
 [Taranasus](https://github.com/taranasus) for code contributions and reviewing. 
 
