@@ -37,8 +37,8 @@ namespace PoseidonTests
             string apiSignatureBase = "GET&https%3A%2F%2Fapi3.loopring.io%2Fapi%2Fv3%2FapiKey&accountId%3D" + 136736;
             BigInteger apiSignatureBaseBigInteger = SHA256Helper.CalculateSHA256HashNumber(apiSignatureBase);
             Eddsa eddsa = new Eddsa(apiSignatureBaseBigInteger, l2KeyDetails.secretKey);
-            var signedMessageEDDSA = eddsa.Sign();
-            Assert.AreEqual("0x2ac9c49ed7589025d900a981aa2805bd1b974fe5f0715290929bc46d721cb7a8292805d8a237155099fc7b89170c832552dd7fb0d23790fb09b16ac05c30be3a2d8bc03d3baa31e459c6ee567a2810ad6680d0045c9909eb692def1423e85aea", signedMessageEDDSA);
+            var xApiSig = eddsa.Sign();
+            Assert.AreEqual("0x2ac9c49ed7589025d900a981aa2805bd1b974fe5f0715290929bc46d721cb7a8292805d8a237155099fc7b89170c832552dd7fb0d23790fb09b16ac05c30be3a2d8bc03d3baa31e459c6ee567a2810ad6680d0045c9909eb692def1423e85aea", xApiSig);
         }
     }
 }
