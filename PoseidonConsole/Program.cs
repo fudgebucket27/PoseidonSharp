@@ -13,6 +13,7 @@ namespace PoseidonConsole
         static void Main(string[] args)
         {
             int iterations = 1000;
+            Console.WriteLine(working);
             Stopwatch sw = new Stopwatch();
             sw.Start();
             for(int i = 0; i < 1000; i++)
