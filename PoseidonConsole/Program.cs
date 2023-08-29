@@ -13,7 +13,7 @@ namespace PoseidonConsole
         static void Main(string[] args)
         {
             int iterations = 1000;
-            Console.WriteLine(working);
+            Console.WriteLine("Working");
             Stopwatch sw = new Stopwatch();
             sw.Start();
             for(int i = 0; i < 1000; i++)
@@ -41,7 +41,7 @@ namespace PoseidonConsole
             }
             sw.Stop();
             double averageTimePerHash = (double)sw.ElapsedMilliseconds / iterations;
-            Console.WriteLine($"Ellapsed time for {iterations} iterations of hash and sign is {sw.ElapsedMilliseconds / 1000} seconds...Average Time per hash is {averageTimePerHash} millieseconds...");
+            Console.WriteLine($"Ellapsed time for {iterations} iterations of hash and sign is {sw.ElapsedMilliseconds / 1000} seconds...Average Time per hash & sign is {averageTimePerHash} millieseconds...");
 
 
             Console.WriteLine("Enter to exit");

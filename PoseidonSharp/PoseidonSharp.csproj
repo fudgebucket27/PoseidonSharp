@@ -5,15 +5,12 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>fudgey.eth</Authors>
     <Description>This is a Poseidon Hashing Library built for use with Loopring</Description>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <PackageProjectUrl>https://github.com/fudgebucket27/PoseidonSharp</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fudgebucket27/PoseidonSharp</RepositoryUrl>
     <PackageTags>poseidon loopring cryptography cryptocurrency hash hashing crypto</PackageTags>
-    <PackageReleaseNotes>Initial release. 
-
--Poseidon Hash works
--Poseidon EDDSA works</PackageReleaseNotes>
+    <PackageReleaseNotes>Speed improvements. Using neinmath to </PackageReleaseNotes>
     <PackageIcon></PackageIcon>
     <PackageIconUrl />
     <NeutralLanguage>en-AU</NeutralLanguage>
