@@ -10,7 +10,7 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fudgebucket27/PoseidonSharp</RepositoryUrl>
     <PackageTags>poseidon loopring cryptography cryptocurrency hash hashing crypto</PackageTags>
-    <PackageReleaseNotes>Speed improvements. Using neinmath to </PackageReleaseNotes>
+    <PackageReleaseNotes>Speed improvements. Using neinmath library for eddsa calculations.</PackageReleaseNotes>
     <PackageIcon></PackageIcon>
     <PackageIconUrl />
     <NeutralLanguage>en-AU</NeutralLanguage>
