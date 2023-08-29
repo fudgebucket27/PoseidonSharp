@@ -1,4 +1,4 @@
-# PoseidonSharp [![.NET](https://github.com/fudgebucket27/PoseidonSharp/actions/workflows/dotnet.yml/badge.svg)](https://github.com/fudgebucket27/PoseidonSharp/actions/workflows/dotnet.yml)[![NuGet version](https://badge.fury.io/nu/PoseidonSharp.svg)](https://badge.fury.io/nu/PoseidonSharp)
+# PoseidonSharp  [![NuGet version](https://badge.fury.io/nu/PoseidonSharp.svg)](https://badge.fury.io/nu/PoseidonSharp)
 ## Intro
 PoseidonSharp is a C# Poseidon hashing/signing library used for hashing/signing requests to the Loopring API. 
 
