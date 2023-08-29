@@ -12,7 +12,7 @@ namespace PoseidonConsole
     {
         static void Main(string[] args)
         {
-            int iterations = 200;
+            int iterations = 1000;
             Console.WriteLine("Working");
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -30,8 +30,7 @@ namespace PoseidonConsole
                     BigInteger.Parse("99999999111111111111111111111111111111111111111111111111111111111111111111"),
                     BigInteger.Parse("99999999911111111111111111111111111111111111111111111111111111111111111111"),
                     BigInteger.Parse("99999999991111111111111111111111111111111111111111111111111111111111111111"),
-                    BigInteger.Parse("99999999999111111111111111111111111111111111111111111111111111111111111111"),
-                    BigInteger.Parse("99999999999911111111111111111111111111111111111111111111111111111111111111")
+                    BigInteger.Parse("99999999999111111111111111111111111111111111111111111111111111111111111111")
                 };
                 Poseidon poseidon = new Poseidon(inputs.Length + 1, 6, 53, "poseidon", 5, _securityTarget: 128);
 
@@ -41,7 +40,10 @@ namespace PoseidonConsole
             }
             sw.Stop();
             double averageTimePerHash = (double)sw.ElapsedMilliseconds / iterations;
-            Console.WriteLine($"Ellapsed time for {iterations} iterations of hash and sign is {sw.ElapsedMilliseconds / 1000} seconds...Average Time per hash & sign is {averageTimePerHash} millieseconds...");
+            double hashesPerSecond = iterations / (sw.ElapsedMilliseconds / 1000);
+            Console.WriteLine($"Ellapsed time for {iterations} iterations of hash with sign is {sw.ElapsedMilliseconds / 1000} seconds...");
+            Console.WriteLine($"Average Time per hash with sign is {averageTimePerHash} milliseconds...");
+            Console.WriteLine($"Hashes per second: {hashesPerSecond}...");
 
 
             Console.WriteLine("Enter to exit");
