@@ -12,11 +12,11 @@ namespace PoseidonConsole
     {
         static void Main(string[] args)
         {
-            int iterations = 1000;
+            int iterations = 200;
             Console.WriteLine("Working");
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            for(int i = 0; i < 1000; i++)
+            for(int i = 0; i < iterations; i++)
             {
                     BigInteger[] inputs = {
                     BigInteger.Parse("11111111111111111111111111111111111111111111111111111111111111111111111111"),
