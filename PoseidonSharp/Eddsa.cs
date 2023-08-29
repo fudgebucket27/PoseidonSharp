@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeinMath;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -14,9 +15,9 @@ namespace PoseidonSharp
         private BigInteger OriginalHash { get; set; }
         private BigInteger PrivateKey { get; set; }
 
-        private static BigInteger JUBJUB_E = BigInteger.Parse("21888242871839275222246405745257275088614511777268538073601725287587578984328");
-        private static BigInteger JUBJUB_C = BigInteger.Parse("8");
-        private static BigInteger JUBJUB_L = BigInteger.DivRem(JUBJUB_E, JUBJUB_C, out JUBJUB_L);
+        private static Integer JUBJUB_E = Integer.Parse("21888242871839275222246405745257275088614511777268538073601725287587578984328");
+        private static Integer JUBJUB_C = Integer.Parse("8");
+        private static Integer JUBJUB_L = IntegerFunctions.DivRem(JUBJUB_E, JUBJUB_C, out JUBJUB_L);
 
 
         public Eddsa(BigInteger _originalHash, string _privateKey)
@@ -33,33 +34,33 @@ namespace PoseidonSharp
 
         public string Sign(object _points = null)
         {
-            (BigInteger x, BigInteger y) B;
+            (Integer x, Integer y) B;
             if (_points != null)
             {
-                B = ((BigInteger x, BigInteger))_points;
+                B = ((Integer x, Integer))_points;
             }
             else
             {
-                B = (BigInteger.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), BigInteger.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
+                B = (Integer.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), Integer.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
             }
 
-            (BigInteger x, BigInteger y) A = Point.Multiply(PrivateKey, B);
-            BigInteger r = HashPrivateKey(PrivateKey, OriginalHash);
-            (BigInteger x, BigInteger y) R = Point.Multiply(r, B);
-            BigInteger t = HashPublic(R, A, OriginalHash);
-            BigInteger S = (r + (PrivateKey * t)) % JUBJUB_E;
-            if (S.Sign == -1)
+            (Integer x, Integer y) A = Point.Multiply(Integer.Parse(PrivateKey.ToString()), B);
+            Integer r = HashPrivateKey(Integer.Parse(PrivateKey.ToString()), Integer.Parse(OriginalHash.ToString()));
+            (Integer x, Integer y) R = Point.Multiply(Integer.Parse(r.ToString()), B);
+            Integer t = Integer.Parse(HashPublic(R, A, Integer.Parse(OriginalHash.ToString())).ToString());
+            Integer S = (r + (Integer.Parse(PrivateKey.ToString()) * t)) % JUBJUB_E;
+            if (S.Sgn() == -1)
             {
                 S = S + JUBJUB_E;
             }
 
             Signature signature = new Signature(R, S);
-            SignedMessage signedMessage = new SignedMessage(A, signature, OriginalHash);
-            string rX = signedMessage.Signature.R.x.ToString("x").PadLeft(64, '0');
-            string rY = signedMessage.Signature.R.y.ToString("x").PadLeft(64, '0');
-            string rS = signedMessage.Signature.S.ToString("x").PadLeft(64, '0');
+            SignedMessage signedMessage = new SignedMessage(A, signature, Integer.Parse(OriginalHash.ToString()));
+            string rX = signedMessage.Signature.R.x.ToHexString().PadLeft(64, '0');
+            string rY = signedMessage.Signature.R.y.ToHexString().PadLeft(64, '0');
+            string rS = signedMessage.Signature.S.ToHexString().PadLeft(64, '0');
             string finalSignedMessage = "0x" + rX + rY + rS;
-            return finalSignedMessage;
+            return finalSignedMessage.ToLower();
         }
 
         public bool Verify(SignedMessage signedMessage)
@@ -67,22 +68,22 @@ namespace PoseidonSharp
             var A = signedMessage.A;
             var sig = signedMessage.Signature;
             var msg = signedMessage.Message;
-            var B = (BigInteger.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), BigInteger.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
+            var B = (Integer.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), Integer.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
             var lhs = Point.Multiply(sig.S, B);
-            var hashPublic = HashPublic(sig.R, A, OriginalHash);
+            var hashPublic = Integer.Parse(HashPublic(sig.R, A, Integer.Parse(OriginalHash.ToString())).ToString());
             var aMultiplyHashPublic = Point.Multiply(hashPublic, A);
             var rhs = Point.Add(sig.R, aMultiplyHashPublic);
             return lhs == rhs;
         }
 
-        private BigInteger HashPublic((BigInteger x, BigInteger y) r, (BigInteger x, BigInteger y) a, BigInteger m)
+        private BigInteger HashPublic((Integer x, Integer y) r, (Integer x, Integer y) a, Integer m)
         {
-            BigInteger[] inputs = { r.x, r.y, a.x, a.y, m };
+            BigInteger[] inputs = { BigInteger.Parse(r.x.ToString()),BigInteger.Parse(r.y.ToString()), BigInteger.Parse(a.x.ToString()), BigInteger.Parse(a.y.ToString()), BigInteger.Parse(m.ToString()) };
             Poseidon poseidon = new Poseidon(6, 6, 52, "poseidon", 5, _securityTarget: 128);
             return poseidon.CalculatePoseidonHash(inputs);
         }
 
-        private BigInteger HashPrivateKey(BigInteger privateKey, BigInteger originalHash)
+        private Integer HashPrivateKey(Integer privateKey, Integer originalHash)
         {
             var secretBytes = CalculateNumberOfBytesAndReturnByteArray(privateKey);
             var originalHashBytes = CalculateNumberOfBytesAndReturnByteArray(originalHash);
@@ -101,15 +102,15 @@ namespace PoseidonSharp
             SHA512 sha512Managed = new SHA512Managed();
             sha512HashBytes = sha512Managed.ComputeHash(combinedPrivateKeyAndPoseidonHashBytes);
 
-            BigInteger sha512HashedNumber = new BigInteger(sha512HashBytes);
-            if (sha512HashedNumber.Sign == -1) //sha512 in bytes is a hex number so sometimes can return negative
+            Integer sha512HashedNumber = IntegerConverter.FromByteArray(sha512HashBytes);
+            if (sha512HashedNumber.Sgn() == -1) //sha512 in bytes is a hex number so sometimes can return negative
             {
-                string sha512HexString = "0" + sha512HashedNumber.ToString("x"); //add a zero to the front of the hex string to make it a  positive number
-                sha512HashedNumber = BigInteger.Parse(sha512HexString, NumberStyles.AllowHexSpecifier);
+                string sha512HexString = "0" + sha512HashedNumber.ToHexString(); //add a zero to the front of the hex string to make it a  positive number
+                sha512HashedNumber = IntegerConverter.FromHexString(sha512HexString);
             }
 
-            BigInteger result = sha512HashedNumber % JUBJUB_L;
-            if (result.Sign == -1)
+            Integer result = sha512HashedNumber % JUBJUB_L;
+            if (result.Sgn() == -1)
             {
                 result = result + JUBJUB_L;
             }
@@ -117,12 +118,14 @@ namespace PoseidonSharp
             return result;
         }
 
-        private byte[] CalculateNumberOfBytesAndReturnByteArray(BigInteger bigIntegerValue) //Don't really need to calcuate the number of bytes but is helpful for debugging
+        private byte[] CalculateNumberOfBytesAndReturnByteArray(Integer bigIntegerValue) //Don't really need to calcuate the number of bytes but is helpful for debugging
         {
+            /*
             BigInteger numberOfBits = (BigInteger)Math.Ceiling(BigInteger.Log(bigIntegerValue, 2));
             numberOfBits += 8 - (numberOfBits % 8);
             BigInteger numberOfBytes = new BigInteger();
             numberOfBytes = BigInteger.DivRem(numberOfBits, 8, out numberOfBytes); //We want 32 bytes otherwise we will have to pad out the byte array
+            */
             return bigIntegerValue.ToByteArray();
         }
 

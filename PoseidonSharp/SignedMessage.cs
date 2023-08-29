@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeinMath;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
@@ -7,12 +8,12 @@ namespace PoseidonSharp
 {
     public class SignedMessage
     {
-        public (BigInteger x, BigInteger y) A = (BigInteger.Parse("0"), BigInteger.Parse("0"));
+        public (Integer x, Integer y) A = (Integer.Parse("0"), Integer.Parse("0"));
         public Signature Signature { get; set; }
 
-        public BigInteger Message { get; set; }
+        public Integer Message { get; set; }
 
-        public SignedMessage((BigInteger x, BigInteger y) _a, Signature _s, BigInteger _message)
+        public SignedMessage((Integer x, Integer y) _a, Signature _s, Integer _message)
         {
             A = _a;
             Signature = _s;

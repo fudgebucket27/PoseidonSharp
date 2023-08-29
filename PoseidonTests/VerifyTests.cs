@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeinMath;
 using PoseidonSharp;
 using System;
 using System.Collections.Generic;
@@ -30,12 +31,12 @@ namespace PoseidonTests
             //Verify Correct Key Is Used
             Signature signatureObject = EddsaHelper.SignatureStringToSignatureObject(signedMessage);
             BigInteger privateKeyBigInteger = EddsaHelper.PrivateKeyHexStringToBigInteger(PrivateKey);
-            SignedMessage verifySignedMessage = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigInteger), signatureObject, poseidonHash);
+            SignedMessage verifySignedMessage = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigInteger), signatureObject, Integer.Parse(poseidonHash.ToString()));
             Assert.IsTrue(eddsa.Verify(verifySignedMessage));
 
             //Verify Incorrect Key Is used
             BigInteger privateKeyBigIntegerIncorrect = EddsaHelper.PrivateKeyHexStringToBigInteger(PrivateKey2);
-            SignedMessage verifySignedMessageIncorrect = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigIntegerIncorrect), signatureObject, poseidonHash);
+            SignedMessage verifySignedMessageIncorrect = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigIntegerIncorrect), signatureObject, Integer.Parse(poseidonHash.ToString()));
             Assert.IsFalse(eddsa.Verify(verifySignedMessageIncorrect));
         }
 
@@ -54,12 +55,12 @@ namespace PoseidonTests
             //Verify Correct Key Is Used
             Signature signatureObject = EddsaHelper.SignatureStringToSignatureObject(signedMessage);
             BigInteger privateKeyBigInteger = EddsaHelper.PrivateKeyHexStringToBigInteger(PrivateKey2);
-            SignedMessage verifySignedMessage = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigInteger), signatureObject, poseidonHash);
+            SignedMessage verifySignedMessage = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigInteger), signatureObject, Integer.Parse(poseidonHash.ToString()));
             Assert.IsTrue(eddsa.Verify(verifySignedMessage));
 
             //Verify Incorrect Key Is used
             BigInteger privateKeyBigIntegerIncorrect = EddsaHelper.PrivateKeyHexStringToBigInteger(PrivateKey);
-            SignedMessage verifySignedMessageIncorrect = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigIntegerIncorrect), signatureObject, poseidonHash);
+            SignedMessage verifySignedMessageIncorrect = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigIntegerIncorrect), signatureObject, Integer.Parse(poseidonHash.ToString()));
             Assert.IsFalse(eddsa.Verify(verifySignedMessageIncorrect));
         }
 
@@ -78,12 +79,12 @@ namespace PoseidonTests
             //Verify Correct Key Is Used
             BigInteger privateKeyBigInteger = EddsaHelper.PrivateKeyHexStringToBigInteger(PrivateKey3);
             Signature signatureObject = EddsaHelper.SignatureStringToSignatureObject(signedMessage);
-            SignedMessage verifySignedMessage = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigInteger), signatureObject, poseidonHash);
+            SignedMessage verifySignedMessage = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigInteger), signatureObject, Integer.Parse(poseidonHash.ToString()));
             Assert.IsTrue(eddsa.Verify(verifySignedMessage));
 
             //Verify Incorrect Key Is used
             BigInteger privateKeyBigIntegerIncorrect = EddsaHelper.PrivateKeyHexStringToBigInteger(PrivateKey);
-            SignedMessage verifySignedMessageIncorrect = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigIntegerIncorrect), signatureObject, poseidonHash);
+            SignedMessage verifySignedMessageIncorrect = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigIntegerIncorrect), signatureObject, Integer.Parse(poseidonHash.ToString()));
             Assert.IsFalse(eddsa.Verify(verifySignedMessageIncorrect));
         }
 

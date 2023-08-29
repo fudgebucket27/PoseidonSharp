@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeinMath;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
@@ -16,9 +17,9 @@ namespace PoseidonSharp
             }
 
             string pureHexSig = sig.Substring(2);
-            var r = BigInteger.Parse(pureHexSig.Substring(0, 64), NumberStyles.AllowHexSpecifier);
-            var s = BigInteger.Parse(pureHexSig.Substring(64, 64), NumberStyles.AllowHexSpecifier);
-            var v = BigInteger.Parse(pureHexSig.Substring(128), NumberStyles.AllowHexSpecifier);
+            var r = IntegerConverter.FromHexString(pureHexSig.Substring(0, 64));
+            var s = IntegerConverter.FromHexString(pureHexSig.Substring(64, 64));
+            var v = IntegerConverter.FromHexString(pureHexSig.Substring(128));
             return new Signature((r,s), v);
         }
 
@@ -33,10 +34,10 @@ namespace PoseidonSharp
             return privateKeyBigInteger;
         }
 
-        public static (BigInteger a, BigInteger b) CalculatePointA(BigInteger privatekeyBigInteger)
+        public static (Integer a, Integer b) CalculatePointA(BigInteger privatekeyBigInteger)
         {
-            var B = (BigInteger.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), BigInteger.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
-            (BigInteger x, BigInteger y) A = Point.Multiply(privatekeyBigInteger, B);
+            var B = (Integer.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), Integer.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
+            (Integer x, Integer y) A = Point.Multiply(Integer.Parse(privatekeyBigInteger.ToString()), B);
             return A;
         }
     }
