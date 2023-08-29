@@ -15,7 +15,7 @@ You can either submodule this repository or add it as a dependency to your proje
 
 ## Important
 
-1. The MAX_INPUT variable is important as you will get a different poseidon hash based on this value. Set it to the length of your BigInteger array inputs. So 3 elements would mean a MAX_INPUT of 3. We then also add 1 when passing the MAX_INPUT as the first parameter to the Poseidon class constructor.
+1. When passing BigInteger array inputs to Poseidon use the length of the input + 1
 
 2. The EDDSA signed message back is (0x + Rx+  Ry + S) and is specific to Loopring
 
