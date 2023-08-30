@@ -71,7 +71,7 @@ A Xeon W-10855M CPU @ 2.80GHz can generate 1000 poseidon hashes and sign them in
 
 [Saucecontrol](https://github.com/saucecontrol) for the Blake2Fast library. 
 
-[Axel Heer'(https://github.com/axelheer) for the NeinMath library which lead to major speed improvments with signing.
+[Axel Heer](https://github.com/axelheer) for the NeinMath library which lead to major speed improvments with signing.
 
 ## License
 Fork this repo and do what you want with it! If you like my work and want to buy me a beer you can send me some ethereum to fudgey.eth or loopring to fudgey.loopring.eth ;)
