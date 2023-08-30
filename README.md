@@ -36,7 +36,7 @@ You can either submodule this repository or add it as a dependency to your proje
             SignedMessage verifySignedMessageIncorrect = new SignedMessage(EddsaHelper.CalculatePointA(privateKeyBigIntegerIncorrect), signatureObject, Integer.Parse(poseidonHash.ToString()));
             bool verifyFalse = eddsa.Verify(verifySignedMessageIncorrect);
 ```
-4. In version 1.0.7 and above there is a helper method for generating the Loopring L2 Details. Look at the following demo code to see how it works.
+4. In version 1.0.7 and above there is a helper method for generating the Loopring L2 Details. Look at the following demo code to see how it works. Through an actual wallet through the browser you will need to use ethereum 'personal_sign' with the Loopring keyseed as the message and the eth address of the requester.
 ```csharp
             using Nethereum.Signer;
             using PoseidonSharp;
