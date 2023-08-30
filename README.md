@@ -61,6 +61,9 @@ You can either submodule this repository or add it as a dependency to your proje
 
 5. View the tests: https://github.com/fudgebucket27/PoseidonSharp/tree/master/PoseidonTests to see additional examples on how to use this library
 
+# Benchmarks
+A Xeon W-10855M CPU @ 2.80GHz can generate 1000 poseidon hashes and sign them in about 13 seconds.
+
 # Thanks to
 [Taranasus](https://github.com/taranasus) for code contributions and reviewing. 
 
