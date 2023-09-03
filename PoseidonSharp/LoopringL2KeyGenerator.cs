@@ -6,10 +6,6 @@ using System.Security.Cryptography;
 using Microsoft.VisualBasic;
 using NeinMath;
 
-/*
-This code was from LoopringUnity. All credit goes to them
-*/
-
 public static class LoopringL2KeyGenerator
 {
 
