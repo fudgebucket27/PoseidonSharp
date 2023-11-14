@@ -82,5 +82,32 @@ namespace PoseidonTests
             string signedMessage = eddsa.Sign();
             Assert.AreEqual("0x034e4750299923e5903d64e7e36d27e19433b2a5d0544b0f68a376cb115fc244076f01c50b1b982a60990d874598a1e89ae395d790c9388b03b9d53fd2e3e4e106e6d49ccb28b27a70ca5b31fb4ce3f247a79d1273b41da99ce12f741ba9ba75", signedMessage, "Signed messages don't match!");
         }
+
+        [TestMethod]
+        [Description("Hash and sign with third private key, large inputs generates a positive big integer from the private key and generates a byte array of 32, precompute a")]
+        public void PoseidonEddsaTest5()
+        {
+            BigInteger[] inputs = {
+                BigInteger.Parse("11111111111111111111111111111111111111111111111111111111111111111111111111"),
+                BigInteger.Parse("11111111111111111111111111111111111111111111111111111111111111111111111111"),
+                BigInteger.Parse("11111111111111111111111111111111111111111111111111111111111111111111111111"),
+                BigInteger.Parse("11111111111111111111111111111111111111111111111111111111111111111111111111"),
+                BigInteger.Parse("11111111111111111111111111111111111111111111111111111111111111111111111111"),
+                BigInteger.Parse("11111111111111111111111111111111111111111111111111111111111111111111111111"),
+                BigInteger.Parse("11111111111111111111111111111111111111111111111111111111111111111111111111"),
+                BigInteger.Parse("11111111111111111111111111111111111111111111111111111111111111111111111111"),
+                BigInteger.Parse("11111111111111111111111111111111111111111111111111111111111111111111111111"),
+                BigInteger.Parse("11111111111111111111111111111111111111111111111111111111111111111111111111"),
+                BigInteger.Parse("11111111111111111111111111111111111111111111111111111111111111111111111111"),
+                BigInteger.Parse("11111111111111111111111111111111111111111111111111111111111111111111111111"),
+                BigInteger.Parse("11111111111111111111111111111111111111111111111111111111111111111111111111")
+            };
+            Poseidon poseidon = new Poseidon(inputs.Length + 1, 6, 53, "poseidon", 5, _securityTarget: 128);
+            BigInteger poseidonHash = poseidon.CalculatePoseidonHash(inputs);
+            Assert.AreEqual(BigInteger.Parse("8668707726223135950189553868157017834953206856133542860940608702666070102166"), poseidonHash, "Hashes don't match!");
+            Eddsa eddsa = new Eddsa(poseidonHash, PrivateKey3, true);
+            string signedMessage = eddsa.Sign();
+            Assert.AreEqual("0x034e4750299923e5903d64e7e36d27e19433b2a5d0544b0f68a376cb115fc244076f01c50b1b982a60990d874598a1e89ae395d790c9388b03b9d53fd2e3e4e106e6d49ccb28b27a70ca5b31fb4ce3f247a79d1273b41da99ce12f741ba9ba75", signedMessage, "Signed messages don't match!");
+        }
     }
 }
