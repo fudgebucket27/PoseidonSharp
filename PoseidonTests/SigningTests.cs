@@ -55,6 +55,7 @@ namespace PoseidonTests
             Assert.AreEqual(BigInteger.Parse("4039926191380788949286172671420227647869138762868816863744279168259334375146"), poseidonHash, "Hashes don't match!");
             Eddsa eddsa = new Eddsa(poseidonHash, PrivateKey3, true);
             string signedMessage = eddsa.Sign();
+            Eddsa.ResetPreComputedPointA();
             Assert.AreEqual("0x2548f1aa374db001ac03fc9e113a9ba0fddd84070acc9fb47e2aa22d1573c0fc1d58cd798ef835d0d8d24f6ef49402e25d3f14604e142cc575a4199bce62ee4e18477876f7993ff9e109c48f88f9ec25f2251635edb56dd6bb51f512b0a2203d", signedMessage, "Signed messages don't match!");
         }
 
@@ -82,6 +83,7 @@ namespace PoseidonTests
             Assert.AreEqual(BigInteger.Parse("8668707726223135950189553868157017834953206856133542860940608702666070102166"), poseidonHash, "Hashes don't match!");
             Eddsa eddsa = new Eddsa(poseidonHash, PrivateKey3, true);
             string signedMessage = eddsa.Sign();
+            Eddsa.ResetPreComputedPointA();
             Assert.AreEqual("0x034e4750299923e5903d64e7e36d27e19433b2a5d0544b0f68a376cb115fc244076f01c50b1b982a60990d874598a1e89ae395d790c9388b03b9d53fd2e3e4e106e6d49ccb28b27a70ca5b31fb4ce3f247a79d1273b41da99ce12f741ba9ba75", signedMessage, "Signed messages don't match!");
         }
 
@@ -109,6 +111,7 @@ namespace PoseidonTests
             Assert.AreEqual(BigInteger.Parse("8668707726223135950189553868157017834953206856133542860940608702666070102166"), poseidonHash, "Hashes don't match!");
             Eddsa eddsa = new Eddsa(poseidonHash, PrivateKey3, true);
             string signedMessage = eddsa.Sign();
+            Eddsa.ResetPreComputedPointA();
             Assert.AreEqual("0x034e4750299923e5903d64e7e36d27e19433b2a5d0544b0f68a376cb115fc244076f01c50b1b982a60990d874598a1e89ae395d790c9388b03b9d53fd2e3e4e106e6d49ccb28b27a70ca5b31fb4ce3f247a79d1273b41da99ce12f741ba9ba75", signedMessage, "Signed messages don't match!");
         }
     }
