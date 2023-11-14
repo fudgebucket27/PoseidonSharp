@@ -19,7 +19,7 @@ namespace PoseidonSharp
         private static Integer JUBJUB_C = Integer.Parse("8");
         private static Integer JUBJUB_L = IntegerFunctions.DivRem(JUBJUB_E, JUBJUB_C, out JUBJUB_L);
 
-        private static (Integer x, Integer y) PrecomputedA;
+        private static (Integer x, Integer y) PrecomputedPointA;
 
         public Eddsa(BigInteger _originalHash, string _privateKey, bool precomputePointA = false)
         {
@@ -31,11 +31,18 @@ namespace PoseidonSharp
                 privateKeyBigInteger = BigInteger.Parse(privateKeyAsPositiveHexString, NumberStyles.AllowHexSpecifier);
             }
             PrivateKey = privateKeyBigInteger;
-            if(precomputePointA == true && PrecomputedA == default)
+            if(precomputePointA == true && PrecomputedPointA == default)
             {
                 var B = (Integer.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), Integer.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
-                PrecomputedA = Point.Multiply(Integer.Parse(PrivateKey.ToString()), B);
+                PrecomputedPointA = Point.Multiply(Integer.Parse(PrivateKey.ToString()), B);
+                Debug.WriteLine("Precomputed Point A");
             }
+        }
+
+        public static void ResetPreComputedPointA()
+        {
+            PrecomputedPointA = default;
+            Debug.WriteLine("Point A was reset");           
         }
 
 
@@ -52,7 +59,7 @@ namespace PoseidonSharp
                 B = (Integer.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), Integer.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
             }
 
-            (Integer x, Integer y) A = PrecomputedA != default ? PrecomputedA : Point.Multiply(Integer.Parse(PrivateKey.ToString()), B);
+            (Integer x, Integer y) A = PrecomputedPointA != default ? PrecomputedPointA : Point.Multiply(Integer.Parse(PrivateKey.ToString()), B);
             Integer r = HashPrivateKey(Integer.Parse(PrivateKey.ToString()), Integer.Parse(OriginalHash.ToString()));
             (Integer x, Integer y) R = Point.Multiply(Integer.Parse(r.ToString()), B);
             Integer t = Integer.Parse(HashPublic(R, A, Integer.Parse(OriginalHash.ToString())).ToString());
