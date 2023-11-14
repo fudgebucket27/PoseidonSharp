@@ -5,12 +5,12 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>fudgey.eth</Authors>
     <Description>This is a Poseidon Hashing Library built for use with Loopring</Description>
-    <Version>1.0.7</Version>
+    <Version>1.0.9</Version>
     <PackageProjectUrl>https://github.com/fudgebucket27/PoseidonSharp</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fudgebucket27/PoseidonSharp</RepositoryUrl>
     <PackageTags>poseidon loopring cryptography cryptocurrency hash hashing crypto</PackageTags>
-    <PackageReleaseNotes>Loopring L2 Key Generation Added</PackageReleaseNotes>
+    <PackageReleaseNotes>New method to a reset point A</PackageReleaseNotes>
     <PackageIcon></PackageIcon>
     <PackageIconUrl />
     <NeutralLanguage>en-AU</NeutralLanguage>
