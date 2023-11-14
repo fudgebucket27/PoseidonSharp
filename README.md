@@ -61,6 +61,11 @@ You can either submodule this repository or add it as a dependency to your proje
 
 5. View the tests: https://github.com/fudgebucket27/PoseidonSharp/tree/master/PoseidonTests to see additional examples on how to use this library
 
+6. In version 1.0.8 you can help speed up signing for the same private key by setttng the last parameter in the Eddsa constructor to true like below. This will precompute points A for further signings.
+```csharp
+    Eddsa eddsa = new Eddsa(poseidonHash, PrivateKey3, true);
+```
+
 # Benchmarks
 A Xeon W-10855M CPU @ 2.80GHz can generate 1000 poseidon hashes and sign them in about 13 seconds.
 
