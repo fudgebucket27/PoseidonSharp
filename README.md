@@ -66,6 +66,11 @@ You can either submodule this repository or add it as a dependency to your proje
     Eddsa eddsa = new Eddsa(poseidonHash, PrivateKey3, true);
 ```
 
+7. The precomputed point A can be reset as below using the static method 
+```csharp
+ Eddsa.ResetPreComputedPointA()
+```
+
 # Benchmarks
 A Xeon W-10855M CPU @ 2.80GHz can generate 1000 poseidon hashes and sign them in about 13 seconds.
 
