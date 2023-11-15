@@ -14,6 +14,7 @@ namespace PoseidonSharp
     {
         private BigInteger OriginalHash { get; set; }
         private BigInteger PrivateKey { get; set; }
+        private static BigInteger LastPrivateKey { get; set; } // Static field to store the last private key
 
         private static Integer JUBJUB_E = Integer.Parse("21888242871839275222246405745257275088614511777268538073601725287587578984328");
         private static Integer JUBJUB_C = Integer.Parse("8");
@@ -21,7 +22,7 @@ namespace PoseidonSharp
 
         private static (Integer x, Integer y) PrecomputedPointA;
 
-        public Eddsa(BigInteger _originalHash, string _privateKey, bool precomputePointA = false)
+        public Eddsa(BigInteger _originalHash, string _privateKey)
         {
             OriginalHash = _originalHash;
             BigInteger privateKeyBigInteger = BigInteger.Parse(_privateKey.Substring(2, _privateKey.Length - 2), NumberStyles.AllowHexSpecifier);
@@ -30,22 +31,30 @@ namespace PoseidonSharp
                 string privateKeyAsPositiveHexString = "0" + _privateKey.Substring(2, _privateKey.Length - 2); //add a zero to the front of the string to make it positive
                 privateKeyBigInteger = BigInteger.Parse(privateKeyAsPositiveHexString, NumberStyles.AllowHexSpecifier);
             }
+
+            // Check if new private key is different from the last used private key
+            if (privateKeyBigInteger != LastPrivateKey)
+            {
+                LastPrivateKey = privateKeyBigInteger; // Update the last private key
+                ResetPreComputedPointA(); // Reset PrecomputedPointA
+
+            }
+
             PrivateKey = privateKeyBigInteger;
-            if(precomputePointA == true && PrecomputedPointA == default)
+
+            if (PrecomputedPointA == default)
             {
                 var B = (Integer.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), Integer.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
                 PrecomputedPointA = Point.Multiply(Integer.Parse(PrivateKey.ToString()), B);
-                Debug.WriteLine("Precomputed Point A");
+                Debug.WriteLine("EDDSA: Precomputed Point A");
             }
         }
 
         public static void ResetPreComputedPointA()
         {
             PrecomputedPointA = default;
-            Debug.WriteLine("Point A was reset");           
+            Debug.WriteLine("EDDSA: Precomputed Point A was reset");           
         }
-
-
 
         public string Sign(object _points = null)
         {
@@ -59,7 +68,7 @@ namespace PoseidonSharp
                 B = (Integer.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), Integer.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
             }
 
-            (Integer x, Integer y) A = PrecomputedPointA != default ? PrecomputedPointA : Point.Multiply(Integer.Parse(PrivateKey.ToString()), B);
+            (Integer x, Integer y) A = PrecomputedPointA; ; //= PrecomputedPointA != default ? PrecomputedPointA : Point.Multiply(Integer.Parse(PrivateKey.ToString()), B);
             Integer r = HashPrivateKey(Integer.Parse(PrivateKey.ToString()), Integer.Parse(OriginalHash.ToString()));
             (Integer x, Integer y) R = Point.Multiply(Integer.Parse(r.ToString()), B);
             Integer t = Integer.Parse(HashPublic(R, A, Integer.Parse(OriginalHash.ToString())).ToString());
