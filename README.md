@@ -58,21 +58,10 @@ You can either submodule this repository or add it as a dependency to your proje
             Eddsa eddsa = new Eddsa(apiSignatureBaseBigInteger, l2KeyDetails.secretKey); //l2KeyDetails.secretKey is the Loopring L2 Private Key
             var xApiSig = eddsa.Sign(); //Add this string as the x-api-sig header in the request to the get loopring api key endpoint
 ```
-
 5. View the tests: https://github.com/fudgebucket27/PoseidonSharp/tree/master/PoseidonTests to see additional examples on how to use this library
 
-6. In version 1.0.8 and above you can help speed up signing for the same private key by setting the last parameter in the Eddsa constructor to true like below. This will precompute points A for further signings of that private key.
-```csharp
-    Eddsa eddsa = new Eddsa(poseidonHash, PrivateKey3, true);
-```
-
-7. The precomputed point A can be reset as below using the static method. Always reset the precomputed point A if you are about to use a new private key in the signing.
-```csharp
- Eddsa.ResetPreComputedPointA()
-```
-
 # Benchmarks
-A Xeon W-10855M CPU @ 2.80GHz can generate 1000 poseidon hashes and sign them in about 13 seconds.
+A Xeon W-10855M CPU @ 2.80GHz can generate 1000 poseidon hashes and sign them in about 8 seconds.
 
 # Thanks to
 [Taranasus](https://github.com/taranasus) for code contributions and reviewing. 
