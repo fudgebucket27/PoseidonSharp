@@ -61,12 +61,12 @@ You can either submodule this repository or add it as a dependency to your proje
 
 5. View the tests: https://github.com/fudgebucket27/PoseidonSharp/tree/master/PoseidonTests to see additional examples on how to use this library
 
-6. In version 1.0.8 and above you can help speed up signing for the same private key by setttng the last parameter in the Eddsa constructor to true like below. This will precompute points A for further signings.
+6. In version 1.0.8 and above you can help speed up signing for the same private key by setting the last parameter in the Eddsa constructor to true like below. This will precompute points A for further signings of that private key.
 ```csharp
     Eddsa eddsa = new Eddsa(poseidonHash, PrivateKey3, true);
 ```
 
-7. The precomputed point A can be reset as below using the static method 
+7. The precomputed point A can be reset as below using the static method. Always reset the precomputed point A if you are about to use a new private key in the signing.
 ```csharp
  Eddsa.ResetPreComputedPointA()
 ```
