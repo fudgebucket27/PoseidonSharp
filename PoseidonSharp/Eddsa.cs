@@ -46,7 +46,7 @@ namespace PoseidonSharp
             {
                 var B = (Integer.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), Integer.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
                 PrecomputedPointA = Point.Multiply(Integer.Parse(PrivateKey.ToString()), B);
-                Debug.WriteLine("EDDSA: Precomputed Point A");
+                Debug.WriteLine("EDDSA: Precomputed Point A was generated");
             }
         }
 
