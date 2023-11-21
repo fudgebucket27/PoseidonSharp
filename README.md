@@ -1,6 +1,6 @@
 # PoseidonSharp
 ## Intro
-PoseidonSharp is a C# Poseidon hashing/signing library used for hashing/signing requests to the Loopring API. 
+PoseidonSharp is a C# Poseidon hashing and EDDSA signing library used for hashing/signing requests to the Loopring API. 
 
 [Loopring](https://loopring.io/#/) is a layer 2 scaling solution for Ethereum.
 
