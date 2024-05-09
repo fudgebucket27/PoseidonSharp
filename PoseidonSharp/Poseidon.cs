@@ -199,32 +199,6 @@ namespace PoseidonSharp
                     poseidonMatrix = ConstantsHelper.ConstantsM14;
                     break;
             }
-            /*
-            BigInteger two = BigInteger.Parse("2"); 
-            //sb.AppendLine($"public static List<List<BigInteger>> ConstantsM{t} = new List<List<BigInteger>>");
-            //sb.AppendLine("{");
-            for (int i = 0; i < t; i++)
-            {
-                //sb.Append("    new List<BigInteger> { ");
-                List<BigInteger> bigIntegers = new List<BigInteger>();
-                for (int j = 0; j < t; j++)
-                {
-
-                    BigInteger result = BigInteger.ModPow(constants[i] - constants[t+j] % p, p - two, p);
-                    if (result.Sign == -1)
-                    {
-                        result = result + p;
-                    }
-                    //sb.Append($"BigInteger.Parse(\"{result}\")");
-                    bigIntegers.Add(result);
-                    //if (j < t - 1) sb.Append(", ");
-                }
-                //sb.AppendLine(" },");
-                poseidonMatrix.Add(bigIntegers);
-            }
-            //sb.AppendLine("};");
-            //Console.WriteLine(sb.ToString());
-            */
             return poseidonMatrix;
         }
 
