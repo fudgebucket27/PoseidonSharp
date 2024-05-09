@@ -20,6 +20,9 @@ namespace PoseidonSharp
         private static Integer JUBJUB_C = Integer.Parse("8");
         private static Integer JUBJUB_L = IntegerFunctions.DivRem(JUBJUB_E, JUBJUB_C, out JUBJUB_L);
 
+        private static (Integer,Integer) B = (Integer.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), Integer.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
+
+
         private static (Integer x, Integer y) PrecomputedPointA;
 
         public Eddsa(BigInteger _originalHash, string _privateKey)
@@ -44,7 +47,6 @@ namespace PoseidonSharp
 
             if (PrecomputedPointA == default)
             {
-                var B = (Integer.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), Integer.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
                 PrecomputedPointA = Point.Multiply(Integer.Parse(PrivateKey.ToString()), B);
                 Debug.WriteLine("EDDSA: Precomputed Point A was generated");
             }
@@ -58,16 +60,6 @@ namespace PoseidonSharp
 
         public string Sign(object _points = null)
         {
-            (Integer x, Integer y) B;
-            if (_points != null)
-            {
-                B = ((Integer x, Integer))_points;
-            }
-            else
-            {
-                B = (Integer.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), Integer.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
-            }
-
             (Integer x, Integer y) A = PrecomputedPointA; ; //= PrecomputedPointA != default ? PrecomputedPointA : Point.Multiply(Integer.Parse(PrivateKey.ToString()), B);
             Integer r = HashPrivateKey(Integer.Parse(PrivateKey.ToString()), Integer.Parse(OriginalHash.ToString()));
             (Integer x, Integer y) R = Point.Multiply(Integer.Parse(r.ToString()), B);
