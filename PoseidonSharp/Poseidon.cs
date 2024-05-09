@@ -6,6 +6,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Blake2Fast;
 
 namespace PoseidonSharp
@@ -248,34 +249,38 @@ namespace PoseidonSharp
         private BigInteger[] CalculatePoseidonSBox(BigInteger[] state, int i)
         {
             int halfF = NRoundsF / 2;
+            BigInteger reducedExponent = E % (SNARK_SCALAR_FIELD - 1);
 
             if (i < halfF || i >= (halfF + NRoundsP))
             {
                 for (int j = 0; j < state.Length; j++)
                 {
-                    state[j] = BigInteger.ModPow(state[j], E, SNARK_SCALAR_FIELD);
+                    state[j] = BigInteger.ModPow(state[j], reducedExponent, SNARK_SCALAR_FIELD);
                 }
             }
             else
             {
-                state[0] = BigInteger.ModPow(state[0], E, SNARK_SCALAR_FIELD);
+                state[0] = BigInteger.ModPow(state[0], reducedExponent, SNARK_SCALAR_FIELD);
             }
             return state;
         }
 
         private BigInteger[] CalculatePoseidonMix(BigInteger[] originalState)
         {
-            BigInteger[] results = new BigInteger[originalState.Length];
+            int n = originalState.Length;
+            BigInteger[] results = new BigInteger[n];
 
-            for (int i = 0; i < ConstantsM.Count; i++)
+            Parallel.For(0, n, i =>
             {
                 BigInteger resultsSumModulus = 0;
-                for (int j = 0; j < originalState.Length; j++)
+                for (int j = 0; j < n; j++)
                 {
                     resultsSumModulus += ConstantsM[i][j] * originalState[j];
+                    resultsSumModulus %= SNARK_SCALAR_FIELD;
                 }
-                results[i] = resultsSumModulus % SNARK_SCALAR_FIELD;
-            }
+                results[i] = resultsSumModulus;
+            });
+
             return results;
         }
     }
