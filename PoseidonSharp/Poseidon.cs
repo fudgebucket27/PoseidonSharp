@@ -13,7 +13,7 @@ namespace PoseidonSharp
 {
     public class Poseidon
     {
-        private BigInteger SNARK_SCALAR_FIELD = BigInteger.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
+        private static BigInteger SNARK_SCALAR_FIELD = BigInteger.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
         private BigInteger FR_ORDER = BigInteger.Parse("21888242871839275222246405745257275088614511777268538073601725287587578984328");
         private int T { get; set; }
         private int NRoundsF { get; set; }
@@ -21,8 +21,8 @@ namespace PoseidonSharp
         private string Seed { get; set; }
         private int E { get; set; }
 
-        private List<BigInteger> ConstantsC { get; set; }
-        private List<List<BigInteger>> ConstantsM { get; set; }
+        private static List<BigInteger> ConstantsC { get; set; }
+        private static List<List<BigInteger>> ConstantsM { get; set; }
         private int SecurityTarget { get; set; }
 
         private BigInteger ReducedExponent { get; set; }
@@ -214,30 +214,22 @@ namespace PoseidonSharp
                 Debug.Assert(inputs.Length < T, "Inputs should be less than t");
             }
             BigInteger[] state = new BigInteger[T];
-
-            for (long i = 0; i < T; i++)
-            {
-                state[i] = 0;
-            }
-
-            for (int i = 0; i < inputs.Length; i++)
-            {
-                state[i] = inputs[i];
-            }
+            Array.Copy(inputs, state, inputs.Length);
 
             int k = 0;
             int halfF = NRoundsF / 2;
+            BigInteger[] results = new BigInteger[T]; // Moved outside the loop to avoid reallocating each iteration
+
             foreach (BigInteger bigInt in ConstantsC)
             {
                 for (int i = 0; i < state.Length; i++)
                 {
-                    state[i] = state[i] + bigInt;
+                    state[i] += bigInt;
                 }
 
                 //CalculatePoseidonSBox
                 if (k < halfF || k >= (halfF + NRoundsP))
                 {
-
                     Parallel.For(0, state.Length, j =>
                     {
                         state[j] = BigInteger.ModPow(state[j], ReducedExponent, SNARK_SCALAR_FIELD);
@@ -250,7 +242,6 @@ namespace PoseidonSharp
 
                 //CalculatePoseidonMix
                 int n = state.Length;
-                BigInteger[] results = new BigInteger[n];
 
                 Parallel.For(0, n, i =>
                 {
@@ -263,9 +254,9 @@ namespace PoseidonSharp
                     results[i] = resultsSumModulus;
                 });
 
-                state = results;
+                Array.Copy(results, state, n);
 
-                if (trace == true)
+                if (trace)
                 {
                     for (int j = 0; j < state.Length; j++)
                     {
@@ -274,11 +265,12 @@ namespace PoseidonSharp
                 }
                 k++;
             }
-            if (chained == true)
+            if (chained)
             {
-                //To do
+                // To do
             }
             return state[0];
         }
+
     }
 }
