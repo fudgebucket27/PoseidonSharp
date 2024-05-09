@@ -25,6 +25,8 @@ namespace PoseidonSharp
         private List<List<BigInteger>> ConstantsM { get; set; }
         private int SecurityTarget { get; set; }
 
+        private BigInteger ReducedExponent { get; set; }
+
         public Poseidon(int _t, int _nRoundsF, int _nRoundsP, string _seed, int _e, List<BigInteger> _constantsC = null, List<BigInteger> _constantsM = null, int _securityTarget = 0)
         {
             Debug.Assert(_nRoundsF % 2 == 0 && _nRoundsF > 0, "_nRoundsF needs to have modulus 2 of 0 and be more than 0");
@@ -109,6 +111,7 @@ namespace PoseidonSharp
             NRoundsP = _nRoundsP;
             Seed = _seed;
             E = _e;
+            ReducedExponent = E % (SNARK_SCALAR_FIELD - 1);
         }
 
         private List<List<BigInteger>> CalculatePoseidonMatrix(BigInteger p, byte[] seed, int t)
@@ -212,10 +215,10 @@ namespace PoseidonSharp
             }
             BigInteger[] state = new BigInteger[T];
 
-            for(long i = 0; i < T;i++)
+            for (long i = 0; i < T; i++)
             {
                 state[i] = 0;
-            }            
+            }
 
             for (int i = 0; i < inputs.Length; i++)
             {
@@ -223,14 +226,44 @@ namespace PoseidonSharp
             }
 
             int k = 0;
+            int halfF = NRoundsF / 2;
             foreach (BigInteger bigInt in ConstantsC)
             {
                 for (int i = 0; i < state.Length; i++)
                 {
                     state[i] = state[i] + bigInt;
                 }
-                state = CalculatePoseidonSBox(state, k);
-                state = CalculatePoseidonMix(state);
+
+                //CalculatePoseidonSBox
+                if (k < halfF || k >= (halfF + NRoundsP))
+                {
+                    for (int j = 0; j < state.Length; j++)
+                    {
+                        state[j] = BigInteger.ModPow(state[j], ReducedExponent, SNARK_SCALAR_FIELD);
+                    }
+                }
+                else
+                {
+                    state[0] = BigInteger.ModPow(state[0], ReducedExponent, SNARK_SCALAR_FIELD);
+                }
+
+                //CalculatePoseidonMix
+                int n = state.Length;
+                BigInteger[] results = new BigInteger[n];
+
+                Parallel.For(0, n, i =>
+                {
+                    BigInteger resultsSumModulus = 0;
+                    for (int j = 0; j < n; j++)
+                    {
+                        resultsSumModulus += ConstantsM[i][j] * state[j];
+                        resultsSumModulus %= SNARK_SCALAR_FIELD;
+                    }
+                    results[i] = resultsSumModulus;
+                });
+
+                state = results;
+
                 if (trace == true)
                 {
                     for (int j = 0; j < state.Length; j++)
@@ -238,50 +271,13 @@ namespace PoseidonSharp
                         Debug.WriteLine($"{k},{j} = {state[j]}");
                     }
                 }
-                k++;            
+                k++;
             }
-            if(chained == true)
+            if (chained == true)
             {
                 //To do
             }
             return state[0];
-        }
-        private BigInteger[] CalculatePoseidonSBox(BigInteger[] state, int i)
-        {
-            int halfF = NRoundsF / 2;
-            BigInteger reducedExponent = E % (SNARK_SCALAR_FIELD - 1);
-
-            if (i < halfF || i >= (halfF + NRoundsP))
-            {
-                for (int j = 0; j < state.Length; j++)
-                {
-                    state[j] = BigInteger.ModPow(state[j], reducedExponent, SNARK_SCALAR_FIELD);
-                }
-            }
-            else
-            {
-                state[0] = BigInteger.ModPow(state[0], reducedExponent, SNARK_SCALAR_FIELD);
-            }
-            return state;
-        }
-
-        private BigInteger[] CalculatePoseidonMix(BigInteger[] originalState)
-        {
-            int n = originalState.Length;
-            BigInteger[] results = new BigInteger[n];
-
-            Parallel.For(0, n, i =>
-            {
-                BigInteger resultsSumModulus = 0;
-                for (int j = 0; j < n; j++)
-                {
-                    resultsSumModulus += ConstantsM[i][j] * originalState[j];
-                    resultsSumModulus %= SNARK_SCALAR_FIELD;
-                }
-                results[i] = resultsSumModulus;
-            });
-
-            return results;
         }
     }
 }
