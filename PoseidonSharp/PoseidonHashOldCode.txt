@@ -1,0 +1,53 @@
+﻿private BigInteger CalculateBlake2BHash(BigInteger data)
+        {
+            var sourceData = data.ToByteArray();
+            if (sourceData.Length <= 32) //pad out bytes
+            {
+                var blake2bHash = Blake2b.ComputeHash(32, sourceData);
+                var positiveHashBytes = new byte[blake2bHash.Length + 1];
+                Array.Copy(blake2bHash, positiveHashBytes, blake2bHash.Length);
+                BigInteger positiveBigInt = new BigInteger(positiveHashBytes);
+                return positiveBigInt;
+            }
+            else //truncate bytes
+            {
+                var truncatedBytes = new byte[32];
+                Array.Copy(sourceData, truncatedBytes, truncatedBytes.Length);
+                var blake2BHashBytes = Blake2b.ComputeHash(32, truncatedBytes);
+                var positiveHashBytes = new byte[blake2BHashBytes.Length + 1];
+                Array.Copy(blake2BHashBytes, positiveHashBytes, blake2BHashBytes.Length);
+                BigInteger positiveBigInt = new BigInteger(positiveHashBytes);
+                return positiveBigInt;
+            }
+        }
+
+        private List<BigInteger> CalculatePoseidonConstants(BigInteger p, byte[] seed, int nRounds)
+        {
+            List<BigInteger> poseidonConstants = new List<BigInteger>();
+            BigInteger seedBigInt = new BigInteger(seed);
+            for (int i = 0; i < nRounds; i++)
+            {
+               seedBigInt = CalculateBlake2BHash(seedBigInt);
+               poseidonConstants.Add(seedBigInt % p);
+            }
+            
+            StringBuilder output = new StringBuilder();
+            output.AppendLine($"public static List<BigInteger> ConstantsC{nRounds}" +  " = new List<BigInteger>(){");
+            int count = 0;
+            foreach(var poseidonConstant in poseidonConstants)
+            {
+                count++;
+                if (count != poseidonConstants.Count)
+                {
+                    output.AppendLine($"BigInteger.Parse(\"{poseidonConstant.ToString()}\"),");
+                }
+                else
+                {
+                    output.AppendLine($"BigInteger.Parse(\"{poseidonConstant.ToString()}\")");
+                }
+            }
+            output.AppendLine("};");
+            Console.WriteLine(output.ToString());
+            
+            return poseidonConstants;
+        }
