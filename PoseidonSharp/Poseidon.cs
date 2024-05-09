@@ -32,7 +32,7 @@ namespace PoseidonSharp
             Debug.Assert(_nRoundsF % 2 == 0 && _nRoundsF > 0, "_nRoundsF needs to have modulus 2 of 0 and be more than 0");
             Debug.Assert(_nRoundsP > 0, "_nRoundsP needs to be more than 0");
 
-            double n = Math.Floor(Math.Log((double)SNARK_SCALAR_FIELD,2));
+            double n = Math.Floor(Math.Log((double)SNARK_SCALAR_FIELD, 2));
             double M;
             if (_securityTarget == 0)
             {
@@ -69,11 +69,11 @@ namespace PoseidonSharp
                 throw new ArgumentException("Invalid SNARK_SCALAR_FIELD for congruency");
             }
 
-            Debug.Assert((_nRoundsF + _nRoundsP) > ((interpolationAttackRatio * Math.Min(n, M)) + Math.Log(_t,2)), "(nRoundsF + nRoundsP) > ((2 + min(M, n)) * grobner_attack_ratio_rounds)");
+            Debug.Assert((_nRoundsF + _nRoundsP) > ((interpolationAttackRatio * Math.Min(n, M)) + Math.Log(_t, 2)), "(nRoundsF + nRoundsP) > ((2 + min(M, n)) * grobner_attack_ratio_rounds)");
             Debug.Assert((_nRoundsF + _nRoundsP) > ((2 + Math.Min(M, n)) * grobnerAttackRatioRounds), "(nRoundsF + nRoundsP) > ((2 + min(M, n)) * grobner_attack_ratio_rounds)");
             Debug.Assert((_nRoundsF + (_t * _nRoundsP)) > (M * grobnerAttackRatioSBoxes), "(nRoundsF + (t * nRoundsP)) > (M * grobner_attack_ratio_sboxes)");
 
-    
+
             if (_constantsC == null)
             {
                 string constantsCseed = _seed + "_constants";
@@ -87,7 +87,7 @@ namespace PoseidonSharp
                     ConstantsC = ConstantsHelper.ConstantsC59;
                 }
             }
-      
+
 
             if (_constantsM == null)
             {
@@ -117,7 +117,7 @@ namespace PoseidonSharp
         private List<List<BigInteger>> CalculatePoseidonMatrix(BigInteger p, byte[] seed, int t)
         {
             List<BigInteger> constants = null;
-            switch(t * 2)
+            switch (t * 2)
             {
                 case 4:
                     constants = ConstantsHelper.ConstantsC4;
@@ -237,10 +237,11 @@ namespace PoseidonSharp
                 //CalculatePoseidonSBox
                 if (k < halfF || k >= (halfF + NRoundsP))
                 {
-                    for (int j = 0; j < state.Length; j++)
+
+                    Parallel.For(0, state.Length, j =>
                     {
                         state[j] = BigInteger.ModPow(state[j], ReducedExponent, SNARK_SCALAR_FIELD);
-                    }
+                    });
                 }
                 else
                 {
