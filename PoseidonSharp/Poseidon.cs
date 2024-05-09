@@ -245,29 +245,20 @@ namespace PoseidonSharp
             }
             return state[0];
         }
-
         private BigInteger[] CalculatePoseidonSBox(BigInteger[] state, int i)
         {
             int halfF = NRoundsF / 2;
 
             if (i < halfF || i >= (halfF + NRoundsP))
             {
-                for(int j = 0; j < state.Length; j++)
+                for (int j = 0; j < state.Length; j++)
                 {
                     state[j] = BigInteger.ModPow(state[j], E, SNARK_SCALAR_FIELD);
-                    if(state[j].Sign == -1)
-                    {
-                        state[j] = state[j] + SNARK_SCALAR_FIELD;
-                    }
                 }
             }
             else
             {
                 state[0] = BigInteger.ModPow(state[0], E, SNARK_SCALAR_FIELD);
-                if (state[0].Sign == -1)
-                {
-                    state[0] = state[0] + SNARK_SCALAR_FIELD;
-                }
             }
             return state;
         }
@@ -275,23 +266,17 @@ namespace PoseidonSharp
         private BigInteger[] CalculatePoseidonMix(BigInteger[] originalState)
         {
             BigInteger[] results = new BigInteger[originalState.Length];
-            BigInteger resultsSum = BigInteger.Parse("0");
-            for(int i = 0; i < ConstantsM.Count; i++)
+
+            for (int i = 0; i < ConstantsM.Count; i++)
             {
-                for(int j = 0; j < originalState.Length; j++)
+                BigInteger resultsSumModulus = 0;
+                for (int j = 0; j < originalState.Length; j++)
                 {
-                    BigInteger valuesMultiped = ConstantsM[i][j] * originalState[j];
-                    resultsSum = BigInteger.Add(resultsSum, valuesMultiped); 
+                    resultsSumModulus += ConstantsM[i][j] * originalState[j];
                 }
-                BigInteger resultsSumModulus = resultsSum % SNARK_SCALAR_FIELD;
-                if (resultsSumModulus.Sign == -1)
-                {
-                    resultsSumModulus = resultsSumModulus + SNARK_SCALAR_FIELD;
-                }
-                results[i] = resultsSumModulus;   
-                resultsSum = BigInteger.Parse("0");
+                results[i] = resultsSumModulus % SNARK_SCALAR_FIELD;
             }
             return results;
-        }        
+        }
     }
 }
