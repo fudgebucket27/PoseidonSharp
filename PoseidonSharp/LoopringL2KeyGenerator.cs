@@ -9,20 +9,20 @@ using NeinMath;
 public static class LoopringL2KeyGenerator
 {
 
-    public static KPair GenerateKeyPair(BigInteger seed)
-    {
+    //public static KPair GenerateKeyPair(BigInteger seed)
+    //{
 
-        var secretKey = seed % KPair.BabyJubSubOrder;
-        var publicKey = PoseidonSharp.Point.Multiply(Integer.Parse(secretKey.ToString()), PoseidonSharp.Point.Generator());
+    //    var secretKey = seed % KPair.BabyJubSubOrder;
+    //    var publicKey = PoseidonSharp.Point.Multiply(Integer.Parse(secretKey.ToString()), PoseidonSharp.Point.Generator());
 
 
-        return new KPair()
-        {
-            PublicKeyX = "0x" + (publicKey.Item1.ToHexString()),
-            PublicKeyY = "0x" + (publicKey.Item2.ToHexString()),
-            SecretKey = "0x" + (secretKey.ToString("x")),
-        };
-    }
+    //    return new KPair()
+    //    {
+    //        PublicKeyX = "0x" + (publicKey.Item1.ToHexString()),
+    //        PublicKeyY = "0x" + (publicKey.Item2.ToHexString()),
+    //        SecretKey = "0x" + (secretKey.ToString("x")),
+    //    };
+    //}
 
     private static (string publicKeyX, string publicKeyY, string secretKey, string ethAddress) GetL2KeyDetails(string _seed, string address, bool skipPublicKeyCalculation = false, bool nextNonce = false)
     {

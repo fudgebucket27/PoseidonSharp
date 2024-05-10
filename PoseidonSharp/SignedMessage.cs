@@ -8,12 +8,12 @@ namespace PoseidonSharp
 {
     public class SignedMessage
     {
-        public (Integer x, Integer y) A = (Integer.Parse("0"), Integer.Parse("0"));
+        public (BigInteger x, BigInteger y) A = (BigInteger.Parse("0"), BigInteger.Parse("0"));
         public Signature Signature { get; set; }
 
-        public Integer Message { get; set; }
+        public BigInteger Message { get; set; }
 
-        public SignedMessage((Integer x, Integer y) _a, Signature _s, Integer _message)
+        public SignedMessage((BigInteger x, BigInteger y) _a, Signature _s, BigInteger _message)
         {
             A = _a;
             Signature = _s;
