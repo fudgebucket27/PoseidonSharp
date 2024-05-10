@@ -255,31 +255,14 @@ namespace PoseidonSharp
                 {
                     BigInteger resultsSumModulus = 0;
 
-                    int j = 0;
-                    for (; j < n - 12; j += 13)
-                    {
-                        resultsSumModulus += ConstantsM[i][j] * state[j];
-                        resultsSumModulus += ConstantsM[i][j + 1] * state[j + 1];
-                        resultsSumModulus += ConstantsM[i][j + 2] * state[j + 2];
-                        resultsSumModulus += ConstantsM[i][j + 3] * state[j + 3];
-                        resultsSumModulus += ConstantsM[i][j + 4] * state[j + 4];
-                        resultsSumModulus += ConstantsM[i][j + 5] * state[j + 5];
-                        resultsSumModulus += ConstantsM[i][j + 6] * state[j + 6];
-                        resultsSumModulus += ConstantsM[i][j + 7] * state[j + 7];
-                        resultsSumModulus += ConstantsM[i][j + 8] * state[j + 8];
-                        resultsSumModulus += ConstantsM[i][j + 9] * state[j + 9];
-                        resultsSumModulus += ConstantsM[i][j + 10] * state[j + 10];
-                        resultsSumModulus += ConstantsM[i][j + 11] * state[j + 11];
-                        resultsSumModulus += ConstantsM[i][j + 12] * state[j + 12];
-                    }
-
-                    for (; j < n; j++)
+                    for (int j = 0; j < n; j++)
                     {
                         resultsSumModulus += ConstantsM[i][j] * state[j];
                     }
 
                     results[i] = resultsSumModulus % SNARK_SCALAR_FIELD;
                 }
+
 
                 state = results;
 
