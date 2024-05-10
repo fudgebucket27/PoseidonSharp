@@ -8,12 +8,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Blake2Fast;
+using NeinMath;
 
 namespace PoseidonSharp
 {
     public class Poseidon
     {
-        private BigInteger SNARK_SCALAR_FIELD = BigInteger.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
+        private Integer SNARK_SCALAR_FIELD = Integer.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
         private BigInteger FR_ORDER = BigInteger.Parse("21888242871839275222246405745257275088614511777268538073601725287587578984328");
         private int T { get; set; }
         private int NRoundsF { get; set; }
@@ -21,11 +22,11 @@ namespace PoseidonSharp
         private string Seed { get; set; }
         private int E { get; set; }
 
-        private List<BigInteger> ConstantsC { get; set; }
-        private List<List<BigInteger>> ConstantsM { get; set; }
+        private List<Integer> ConstantsC { get; set; }
+        private List<List<Integer>> ConstantsM { get; set; }
         private int SecurityTarget { get; set; }
 
-        private BigInteger ReducedExponent { get; set; }
+        private Integer ReducedExponent { get; set; }
 
         public Poseidon(int _t, int _nRoundsF, int _nRoundsP, string _seed, int _e, List<BigInteger> _constantsC = null, List<BigInteger> _constantsM = null, int _securityTarget = 0)
         {
@@ -114,9 +115,9 @@ namespace PoseidonSharp
             ReducedExponent = E % (SNARK_SCALAR_FIELD - 1);
         }
 
-        private List<List<BigInteger>> CalculatePoseidonMatrix(BigInteger p, byte[] seed, int t)
+        private List<List<Integer>> CalculatePoseidonMatrix(Integer p, byte[] seed, int t)
         {
-            List<BigInteger> constants = null;
+            List<Integer> constants = null;
             switch(t * 2)
             {
                 case 4:
@@ -160,7 +161,7 @@ namespace PoseidonSharp
                     break;
             }
             //StringBuilder sb = new StringBuilder();
-            List<List<BigInteger>> poseidonMatrix = null;
+            List<List<Integer>> poseidonMatrix = null;
             switch (t)
             {
                 case 2:
@@ -213,7 +214,7 @@ namespace PoseidonSharp
             {
                 Debug.Assert(inputs.Length < T, "Inputs should be less than t");
             }
-            BigInteger[] state = new BigInteger[T];
+            Integer[] state = new Integer[T];
 
             for (long i = 0; i < T; i++)
             {
@@ -222,12 +223,12 @@ namespace PoseidonSharp
 
             for (int i = 0; i < inputs.Length; i++)
             {
-                state[i] = inputs[i];
+                state[i] = Integer.Parse(inputs[i].ToString());
             }
 
             int k = 0;
             int halfF = NRoundsF / 2;
-            foreach (BigInteger bigInt in ConstantsC)
+            foreach (Integer bigInt in ConstantsC)
             {
                 for (int i = 0; i < state.Length; i++)
                 {
@@ -239,21 +240,21 @@ namespace PoseidonSharp
                 {
                     for (int j = 0; j < state.Length; j++)
                     {
-                        state[j] = BigInteger.ModPow(state[j], ReducedExponent, SNARK_SCALAR_FIELD);
+                        state[j] = IntegerFunctions.ModPow(state[j], ReducedExponent, SNARK_SCALAR_FIELD);
                     }
                 }
                 else
                 {
-                    state[0] = BigInteger.ModPow(state[0], ReducedExponent, SNARK_SCALAR_FIELD);
+                    state[0] = IntegerFunctions.ModPow(state[0], ReducedExponent, SNARK_SCALAR_FIELD);
                 }
 
                 //CalculatePoseidonMix
                 int n = state.Length;
-                BigInteger[] results = new BigInteger[n];
+                Integer[] results = new Integer[n];
 
                 for (int i = 0; i < n; i++)
                 {
-                    BigInteger resultsSumModulus = 0;
+                    Integer resultsSumModulus = 0;
 
                     int j = 0;
                     for (; j < n - 12; j += 13)
@@ -296,7 +297,7 @@ namespace PoseidonSharp
             {
                 //To do
             }
-            return state[0];
+            return BigInteger.Parse(state[0].ToString());
         }
     }
 }
