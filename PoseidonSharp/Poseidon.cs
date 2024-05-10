@@ -11,6 +11,32 @@ using Blake2Fast;
 
 namespace PoseidonSharp
 {
+
+    public struct BigIntegerVector
+    {
+        private BigInteger[] _elements;
+
+        public BigIntegerVector(List<BigInteger> values, int index)
+        {
+            _elements = new BigInteger[Vector<long>.Count];
+            for (int i = 0; i < Vector<long>.Count; i++)
+            {
+                _elements[i] = values[index + i];
+            }
+        }
+
+        public static BigInteger Dot(BigIntegerVector v1, BigIntegerVector v2)
+        {
+            BigInteger result = BigInteger.Zero;
+            for (int i = 0; i < Vector<long>.Count; i++)
+            {
+                result += v1._elements[i] * v2._elements[i];
+            }
+            return result;
+        }
+    }
+
+
     public class Poseidon
     {
         private BigInteger SNARK_SCALAR_FIELD = BigInteger.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
@@ -251,17 +277,46 @@ namespace PoseidonSharp
                 int n = state.Length;
                 BigInteger[] results = new BigInteger[n];
 
-                for (int i = 0; i < n; i++)
-                {
-                    BigInteger resultsSumModulus = 0;
+                int blockSize = 64; // Adjust the block size based on cache size and performance tuning
 
-                    for (int j = 0; j < n; j++)
+                Parallel.For(0, n, i =>
+                {
+                    BigInteger resultsSumModulus = BigInteger.Zero;
+
+                    int jj = 0;
+                    for (; jj < n - blockSize + 1; jj += blockSize)
+                    {
+                        BigInteger blockSum = BigInteger.Zero;
+                        for (int j = jj; j < jj + blockSize; j += Vector<long>.Count)
+                        {
+                            if (j + Vector<long>.Count <= jj + blockSize)
+                            {
+                                BigIntegerVector constantsVector = new BigIntegerVector(ConstantsM[i], j);
+                                BigIntegerVector stateVector = new BigIntegerVector(state.ToList(), j);
+                                blockSum += BigIntegerVector.Dot(constantsVector, stateVector);
+                            }
+                            else
+                            {
+                                for (int l = j; l < jj + blockSize; l++)
+                                {
+                                    blockSum += ConstantsM[i][l] * state[l];
+                                }
+                            }
+                        }
+                        resultsSumModulus += blockSum;
+                    }
+
+                    for (int j = jj; j < n; j++)
                     {
                         resultsSumModulus += ConstantsM[i][j] * state[j];
                     }
 
                     results[i] = resultsSumModulus % SNARK_SCALAR_FIELD;
-                }
+                });
+
+
+
+
 
 
                 state = results;
