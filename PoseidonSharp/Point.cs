@@ -104,27 +104,6 @@ namespace PoseidonSharp
         {
             return FQ(self - other, SNARK_SCALAR_FIELD);
         }
-
-        public static Integer ExtendedEuclideanInverse(Integer a, Integer modulus)
-        {
-            Integer t = 0, newt = 1;
-            Integer r = modulus, newr = a;
-            while (newr != 0)
-            {
-                Integer quotient = r / newr;
-
-                (t, newt) = (newt, t - quotient * newt);
-                (r, newr) = (newr, r - quotient * newr);
-            }
-
-            if (r > 1)
-                throw new InvalidOperationException("a is not invertible");
-            if (t < 0)
-                t = t + modulus;
-
-            return t;
-        }
-
     }
 }
 
