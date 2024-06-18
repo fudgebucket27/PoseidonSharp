@@ -63,6 +63,9 @@ You can either submodule this repository or add it as a dependency to your proje
 # Benchmarks
 A Xeon W-10855M CPU @ 2.80GHz can generate 1000 poseidon hashes and sign them in about 8 seconds.
 
+# Usage
+Please see [LoopNet](https://github.com/fudgebucket27/loopnet) for other examples on using this library.
+
 # Thanks to
 [Taranasus](https://github.com/taranasus) for code contributions and reviewing. 
 
