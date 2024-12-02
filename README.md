@@ -4,7 +4,7 @@ PoseidonSharp is a C# Poseidon hashing and EDDSA signing library used for hashin
 
 [Loopring](https://loopring.io/#/) is a layer 2 scaling solution for Ethereum.
 
-This library's reference implementation was originally in python and taken from https://github.com/Loopring/hello_loopring/blob/loopring-v3/sdk/ethsnarks/poseidon/permutation.py. As there was no C# implementation for Poseidon,this referenced python code was converted to C# by yours truly.
+This library's reference implementation was originally in python and taken from https://github.com/Loopring/hello_loopring/blob/loopring-v3/sdk/ethsnarks/poseidon/permutation.py and https://github.com/Loopring/hello_loopring/blob/loopring-v3/sdk/ethsnarks/eddsa.py. As there was no C# implementation for Poseidon and EDDSA,this referenced python code was converted to C# by yours truly.
 
 The included PoseidonConsole project contains some demo code on how to use the library. PoseidonTests contains the unit tests for MSTest.
 
