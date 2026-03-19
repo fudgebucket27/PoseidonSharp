@@ -140,7 +140,6 @@ namespace PoseidonSharp
         }
 
         // Precomputed bit masks for wNAF extraction
-        private static readonly Integer WNAF_MASK = Integer.Parse("15"); // 2^4 - 1
         private static readonly Integer WNAF_BIT1 = ONE << 1;
         private static readonly Integer WNAF_BIT2 = ONE << 2;
         private static readonly Integer WNAF_BIT3 = ONE << 3;
