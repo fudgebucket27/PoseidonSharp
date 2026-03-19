@@ -8,7 +8,8 @@ namespace PoseidonSharp
 {
     public class SignedMessage
     {
-        public (Integer x, Integer y) A = (Integer.Parse("0"), Integer.Parse("0"));
+        private static readonly Integer IntegerZero = Integer.Parse("0");
+        public (Integer x, Integer y) A = (IntegerZero, IntegerZero);
         public Signature Signature { get; set; }
 
         public Integer Message { get; set; }

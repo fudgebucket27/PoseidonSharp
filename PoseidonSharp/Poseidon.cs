@@ -12,8 +12,8 @@ namespace PoseidonSharp
 {
     public class Poseidon
     {
-        private BigInteger SNARK_SCALAR_FIELD = BigInteger.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
-        private BigInteger FR_ORDER = BigInteger.Parse("21888242871839275222246405745257275088614511777268538073601725287587578984328");
+        private static readonly BigInteger SNARK_SCALAR_FIELD = BigInteger.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
+        private static readonly BigInteger FR_ORDER = BigInteger.Parse("21888242871839275222246405745257275088614511777268538073601725287587578984328");
         private int T { get; set; }
         private int NRoundsF { get; set; }
         private int NRoundsP { get; set; }
@@ -355,9 +355,9 @@ namespace PoseidonSharp
         private BigInteger[] CalculatePoseidonMix(BigInteger[] originalState)
         {
             BigInteger[] results = new BigInteger[originalState.Length];
-            BigInteger resultsSum = BigInteger.Parse("0");
             for(int i = 0; i < ConstantsM.Count; i++)
             {
+                BigInteger resultsSum = BigInteger.Zero;
                 for(int j = 0; j < originalState.Length; j++)
                 {
                     BigInteger valuesMultiped = ConstantsM[i][j] * originalState[j];
@@ -368,8 +368,7 @@ namespace PoseidonSharp
                 {
                     resultsSumModulus = resultsSumModulus + SNARK_SCALAR_FIELD;
                 }
-                results[i] = resultsSumModulus;   
-                resultsSum = BigInteger.Parse("0");
+                results[i] = resultsSumModulus;
             }
             return results;
         }        

@@ -12,13 +12,16 @@ namespace PoseidonSharp
     public static class Point
     {
         private static readonly Integer SNARK_SCALAR_FIELD = Integer.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
+        private static readonly Integer ZERO = Integer.Parse("0");
         private static readonly Integer ONE = Integer.Parse("1");
+        private static readonly Integer TWO = Integer.Parse("2");
         private static readonly Integer JUBJUB_D = Integer.Parse("168696");
         private static readonly Integer JUBJUB_A = Integer.Parse("168700");
+        private static readonly (Integer x, Integer y) GENERATOR_POINT = (Integer.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), Integer.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
+        private static readonly (Integer x, Integer y) INFINITY_POINT = (Integer.Parse("0"), Integer.Parse("1"));
         public static (Integer, Integer) Generator()
         {
-            (Integer x, Integer y) points = (Integer.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), Integer.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
-            return points;
+            return GENERATOR_POINT;
         }
 
         public static (Integer, Integer) Multiply(Integer scalar, (Integer x, Integer y) _points)
@@ -28,14 +31,13 @@ namespace PoseidonSharp
             int i = 0;
             while (scalar != 0)
             {
-                Integer one = Integer.Parse("1");
-                Integer result = (scalar & one);
+                Integer result = (scalar & ONE);
                 if (result != 0)
                 {
                     a = Add(a, p);
                 }
                 p = Add(p, p);
-                scalar = IntegerFunctions.DivRem(scalar, 2, out scalar);
+                scalar = scalar >> 1;
                 i += 1;
             }
 
@@ -76,8 +78,7 @@ namespace PoseidonSharp
 
         public static (Integer, Integer) Infinity()
         {
-            (Integer x, Integer y) points = (Integer.Parse("0"), Integer.Parse("1"));
-            return points;
+            return INFINITY_POINT;
         }
 
         public static Integer Multiply(Integer self, Integer other)

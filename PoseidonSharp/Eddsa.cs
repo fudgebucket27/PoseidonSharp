@@ -19,6 +19,7 @@ namespace PoseidonSharp
         private static Integer JUBJUB_E = Integer.Parse("21888242871839275222246405745257275088614511777268538073601725287587578984328");
         private static Integer JUBJUB_C = Integer.Parse("8");
         private static Integer JUBJUB_L = IntegerFunctions.DivRem(JUBJUB_E, JUBJUB_C, out JUBJUB_L);
+        private static readonly (Integer x, Integer y) GENERATOR_B = Point.Generator();
 
         private static (Integer x, Integer y) PrecomputedPointA;
 
@@ -44,8 +45,7 @@ namespace PoseidonSharp
 
             if (PrecomputedPointA == default)
             {
-                var B = (Integer.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), Integer.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
-                PrecomputedPointA = Point.Multiply(Integer.Parse(PrivateKey.ToString()), B);
+                PrecomputedPointA = Point.Multiply(Integer.Parse(PrivateKey.ToString()), GENERATOR_B);
                 Debug.WriteLine("EDDSA: Precomputed Point A was generated");
             }
         }
@@ -65,21 +65,23 @@ namespace PoseidonSharp
             }
             else
             {
-                B = (Integer.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), Integer.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
+                B = GENERATOR_B;
             }
 
             (Integer x, Integer y) A = PrecomputedPointA; ; //= PrecomputedPointA != default ? PrecomputedPointA : Point.Multiply(Integer.Parse(PrivateKey.ToString()), B);
-            Integer r = HashPrivateKey(Integer.Parse(PrivateKey.ToString()), Integer.Parse(OriginalHash.ToString()));
-            (Integer x, Integer y) R = Point.Multiply(Integer.Parse(r.ToString()), B);
-            Integer t = Integer.Parse(HashPublic(R, A, Integer.Parse(OriginalHash.ToString())).ToString());
-            Integer S = (r + (Integer.Parse(PrivateKey.ToString()) * t)) % JUBJUB_E;
+            Integer privateKeyInteger = Integer.Parse(PrivateKey.ToString());
+            Integer originalHashInteger = Integer.Parse(OriginalHash.ToString());
+            Integer r = HashPrivateKey(privateKeyInteger, originalHashInteger);
+            (Integer x, Integer y) R = Point.Multiply(r, B);
+            Integer t = Integer.Parse(HashPublic(R, A, originalHashInteger).ToString());
+            Integer S = (r + (privateKeyInteger * t)) % JUBJUB_E;
             if (S.Sgn() == -1)
             {
                 S = S + JUBJUB_E;
             }
 
             Signature signature = new Signature(R, S);
-            SignedMessage signedMessage = new SignedMessage(A, signature, Integer.Parse(OriginalHash.ToString()));
+            SignedMessage signedMessage = new SignedMessage(A, signature, originalHashInteger);
             string rX = signedMessage.Signature.R.x.ToHexString().PadLeft(64, '0');
             string rY = signedMessage.Signature.R.y.ToHexString().PadLeft(64, '0');
             string rS = signedMessage.Signature.S.ToHexString().PadLeft(64, '0');
@@ -92,7 +94,7 @@ namespace PoseidonSharp
             var A = signedMessage.A;
             var sig = signedMessage.Signature;
             var msg = signedMessage.Message;
-            var B = (Integer.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), Integer.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
+            var B = GENERATOR_B;
             var lhs = Point.Multiply(sig.S, B);
             var hashPublic = Integer.Parse(HashPublic(sig.R, A, Integer.Parse(OriginalHash.ToString())).ToString());
             var aMultiplyHashPublic = Point.Multiply(hashPublic, A);

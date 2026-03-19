@@ -36,8 +36,7 @@ namespace PoseidonSharp
 
         public static (Integer a, Integer b) CalculatePointA(BigInteger privatekeyBigInteger)
         {
-            var B = (Integer.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"), Integer.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311"));
-            (Integer x, Integer y) A = Point.Multiply(Integer.Parse(privatekeyBigInteger.ToString()), B);
+            (Integer x, Integer y) A = Point.Multiply(Integer.Parse(privatekeyBigInteger.ToString()), Point.Generator());
             return A;
         }
     }

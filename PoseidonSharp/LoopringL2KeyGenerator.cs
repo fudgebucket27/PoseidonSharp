@@ -8,6 +8,14 @@ using NeinMath;
 
 public static class LoopringL2KeyGenerator
 {
+    private static readonly BigInteger JUBJUB_ORDER = BigInteger.Parse("21888242871839275222246405745257275088614511777268538073601725287587578984328");
+    private static readonly BigInteger SNARK_SCALAR_FIELD = BigInteger.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
+    private static readonly BigInteger[] BASE8 = new BigInteger[] {
+        BigInteger.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"),
+        BigInteger.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311")
+    };
+    private static readonly BigInteger JUBJUB_A_BIG = BigInteger.Parse("168700");
+    private static readonly BigInteger JUBJUB_D_BIG = BigInteger.Parse("168696");
 
     public static KPair GenerateKeyPair(BigInteger seed)
     {
@@ -39,12 +47,7 @@ public static class LoopringL2KeyGenerator
 
     private static (string publicKeyX, string publicKeyY, string secretKey, string ethAddress) RipKeyAppart((string eddsa, string ethAddress) rawKey, bool skipPublicKeyCalculation = false)
     {
-        BigInteger order = BigInteger.Parse("21888242871839275222246405745257275088614511777268538073601725287587578984328");
-        BigInteger p = BigInteger.Parse("21888242871839275222246405745257275088548364400416034343698204186575808495617");
-        BigInteger[] Base8 = new BigInteger[] {
-                BigInteger.Parse("16540640123574156134436876038791482806971768689494387082833631921987005038935"),
-                BigInteger.Parse("20819045374670962167435360035096875258406992893633759881276124905556507972311") };
-        BigInteger suborder = rsh(order, 3);
+        BigInteger suborder = JUBJUB_ORDER >> 3;
         byte[] rawKeyBytes = ToHexBytes(rawKey.eddsa.Replace("0x", ""));
         var number = ParseHexUnsigned(rawKey.eddsa);
 
@@ -58,7 +61,7 @@ public static class LoopringL2KeyGenerator
         // Have this logic to save on computing resources. No reason to calculate them unless needed
         // The only time we actually need these is if the user wants to export their wallet
         if (!skipPublicKeyCalculation)
-            publicKey = mulPointEscalar(Base8, secertKey, p);
+            publicKey = mulPointEscalar(BASE8, secertKey, SNARK_SCALAR_FIELD);
 
         return ("0x" + publicKey[0].ToString("x").PadLeft(64, '0'), "0x" + publicKey[1].ToString("x").PadLeft(64, '0'), "0x" + secertKey.ToString("x").PadLeft(64, '0'), rawKey.ethAddress);
     }
@@ -78,18 +81,18 @@ public static class LoopringL2KeyGenerator
         var beta = Pmul(a[0], b[1], p);
         var gamma = Pmul(a[1], b[0], p);
 
-        var breakdown1 = Pmul(BigInteger.Parse("168700"), a[0], p);
+        var breakdown1 = Pmul(JUBJUB_A_BIG, a[0], p);
         var breakdown2 = Psub(a[1], breakdown1, p);
         var breakdown3 = Padd(b[0], b[1], p);
 
         var delta = Pmul(breakdown2, breakdown3, p);
         var tau = Pmul(beta, gamma, p);
-        var dtau = Pmul(BigInteger.Parse("168696"), tau, p);
+        var dtau = Pmul(JUBJUB_D_BIG, tau, p);
 
-        res[0] = Pdiv(Padd(beta, gamma, p), Padd(1, dtau, p), p);
+        res[0] = Pdiv(Padd(beta, gamma, p), Padd(BigInteger.One, dtau, p), p);
         res[1] = Pdiv(
-            Padd(delta, Psub(Pmul(BigInteger.Parse("168700"), beta, p), gamma, p), p),
-            Psub(1, dtau, p),
+            Padd(delta, Psub(Pmul(JUBJUB_A_BIG, beta, p), gamma, p), p),
+            Psub(BigInteger.One, dtau, p),
             p);
 
         return res;
@@ -137,24 +140,23 @@ public static class LoopringL2KeyGenerator
 
     private static BigInteger[] mulPointEscalar(BigInteger[] tbase, BigInteger secretKey, BigInteger p)
     {
-        BigInteger[] res = new[] { BigInteger.Parse("0"), BigInteger.Parse("1") };
+        BigInteger[] res = new[] { BigInteger.Zero, BigInteger.One };
         var rem = secretKey;
         var exp = tbase;
 
         while (rem != 0)
         {
-            if ((rem & BigInteger.Parse("1")) == BigInteger.Parse("1"))
+            if ((rem & BigInteger.One) == BigInteger.One)
                 res = addPoint(res, exp, p);
             exp = addPoint(exp, exp, p);
-            rem = rem / 2;
+            rem = rem >> 1;
         }
         return res;
     }
 
     private static BigInteger rsh(BigInteger original, int order)
     {
-        BigInteger multiplier = (BigInteger)Math.Pow(2, order);
-        return original / multiplier;
+        return original >> order;
     }
 
     private static byte[] ToHexBytes(string hex)
@@ -207,14 +209,10 @@ public static class LoopringL2KeyGenerator
 
     private static BigInteger leBuff2Int(byte[] buff)
     {
-        BigInteger res = 0;
-        for (int i = 0; i < buff.Length; i++)
-        {
-            var n = new BigInteger(buff[i]);
-            res = BigInteger.Add(res, n << (i * 8));
-        }
-
-        return res;
+        // Add a zero byte at the end to ensure the result is positive (unsigned interpretation)
+        byte[] positiveBytes = new byte[buff.Length + 1];
+        Array.Copy(buff, positiveBytes, buff.Length);
+        return new BigInteger(positiveBytes);
     }
 }
 public class KPair
