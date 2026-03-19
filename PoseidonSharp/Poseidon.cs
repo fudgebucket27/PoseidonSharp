@@ -20,9 +20,12 @@ namespace PoseidonSharp
         private string Seed { get; set; }
         private int E { get; set; }
 
-        private List<BigInteger> ConstantsC { get; set; }
-        private List<List<BigInteger>> ConstantsM { get; set; }
+        private BigInteger[] ConstantsCArray;
+        private BigInteger[][] ConstantsMArray;
         private int SecurityTarget { get; set; }
+        private int HalfF;
+        private int HalfFPlusNRoundsP;
+        private BigInteger[] MixBuffer;
 
         public Poseidon(int _t, int _nRoundsF, int _nRoundsP, string _seed, int _e, List<BigInteger> _constantsC = null, List<BigInteger> _constantsM = null, int _securityTarget = 0)
         {
@@ -77,11 +80,11 @@ namespace PoseidonSharp
                 byte[] constantsCseedBytes = Encoding.ASCII.GetBytes(constantsCseed);
                 if (_nRoundsF + _nRoundsP == 58)
                 {
-                    ConstantsC = ConstantsHelper.ConstantsC58;
+                    ConstantsCArray = ConstantsHelper.ConstantsC58.ToArray();
                 }
                 else
                 {
-                    ConstantsC = ConstantsHelper.ConstantsC59;
+                    ConstantsCArray = ConstantsHelper.ConstantsC59.ToArray();
                 }
             }
       
@@ -90,7 +93,12 @@ namespace PoseidonSharp
             {
                 string constantsMseed = _seed + "_matrix_0000";
                 byte[] constantsMseedBytes = Encoding.ASCII.GetBytes(constantsMseed);
-                ConstantsM = CalculatePoseidonMatrix(SNARK_SCALAR_FIELD, constantsMseedBytes, _t);
+                var matrix = CalculatePoseidonMatrix(SNARK_SCALAR_FIELD, constantsMseedBytes, _t);
+                ConstantsMArray = new BigInteger[matrix.Count][];
+                for (int i = 0; i < matrix.Count; i++)
+                {
+                    ConstantsMArray[i] = matrix[i].ToArray();
+                }
             }
 
             int nConstraints = (_nRoundsF * _t) + _nRoundsP;
@@ -108,6 +116,9 @@ namespace PoseidonSharp
             NRoundsP = _nRoundsP;
             Seed = _seed;
             E = _e;
+            HalfF = _nRoundsF / 2;
+            HalfFPlusNRoundsP = HalfF + _nRoundsP;
+            MixBuffer = new BigInteger[_t];
         }
 
         private BigInteger CalculateBlake2BHash(BigInteger data)
@@ -301,15 +312,19 @@ namespace PoseidonSharp
                 state[i] = inputs[i];
             }
 
-            int k = 0;
-            foreach (BigInteger bigInt in ConstantsC)
+            for (int k = 0; k < ConstantsCArray.Length; k++)
             {
+                BigInteger bigInt = ConstantsCArray[k];
                 for (int i = 0; i < state.Length; i++)
                 {
                     state[i] = state[i] + bigInt;
                 }
-                state = CalculatePoseidonSBox(state, k);
-                state = CalculatePoseidonMix(state);
+                CalculatePoseidonSBox(state, k);
+                CalculatePoseidonMix(state, MixBuffer);
+                // Swap state and MixBuffer
+                var temp = state;
+                state = MixBuffer;
+                MixBuffer = temp;
                 if (trace == true)
                 {
                     for (int j = 0; j < state.Length; j++)
@@ -317,7 +332,6 @@ namespace PoseidonSharp
                         Debug.WriteLine($"{k},{j} = {state[j]}");
                     }
                 }
-                k++;            
             }
             if(chained == true)
             {
@@ -326,42 +340,46 @@ namespace PoseidonSharp
             return state[0];
         }
 
-        private BigInteger[] CalculatePoseidonSBox(BigInteger[] state, int i)
+        private void CalculatePoseidonSBox(BigInteger[] state, int i)
         {
-            int halfF = NRoundsF / 2;
-
-            if (i < halfF || i >= (halfF + NRoundsP))
+            if (i < HalfF || i >= HalfFPlusNRoundsP)
             {
                 for(int j = 0; j < state.Length; j++)
                 {
-                    state[j] = BigInteger.ModPow(state[j], E, SNARK_SCALAR_FIELD);
-                    if(state[j].Sign == -1)
-                    {
-                        state[j] = state[j] + SNARK_SCALAR_FIELD;
-                    }
+                    state[j] = ModPowE(state[j]);
                 }
             }
             else
             {
-                state[0] = BigInteger.ModPow(state[0], E, SNARK_SCALAR_FIELD);
-                if (state[0].Sign == -1)
-                {
-                    state[0] = state[0] + SNARK_SCALAR_FIELD;
-                }
+                state[0] = ModPowE(state[0]);
             }
-            return state;
         }
 
-        private BigInteger[] CalculatePoseidonMix(BigInteger[] originalState)
+        private BigInteger ModPowE(BigInteger x)
         {
-            BigInteger[] results = new BigInteger[originalState.Length];
-            for(int i = 0; i < ConstantsM.Count; i++)
+            if (E == 5)
+            {
+                BigInteger x2 = (x * x) % SNARK_SCALAR_FIELD;
+                BigInteger x4 = (x2 * x2) % SNARK_SCALAR_FIELD;
+                return (x4 * x) % SNARK_SCALAR_FIELD;
+            }
+            else if (E == 3)
+            {
+                BigInteger x2 = (x * x) % SNARK_SCALAR_FIELD;
+                return (x2 * x) % SNARK_SCALAR_FIELD;
+            }
+            return BigInteger.ModPow(x, E, SNARK_SCALAR_FIELD);
+        }
+
+        private void CalculatePoseidonMix(BigInteger[] originalState, BigInteger[] results)
+        {
+            for(int i = 0; i < ConstantsMArray.Length; i++)
             {
                 BigInteger resultsSum = BigInteger.Zero;
+                BigInteger[] row = ConstantsMArray[i];
                 for(int j = 0; j < originalState.Length; j++)
                 {
-                    BigInteger valuesMultiped = ConstantsM[i][j] * originalState[j];
-                    resultsSum = BigInteger.Add(resultsSum, valuesMultiped); 
+                    resultsSum += row[j] * originalState[j];
                 }
                 BigInteger resultsSumModulus = resultsSum % SNARK_SCALAR_FIELD;
                 if (resultsSumModulus.Sign == -1)
@@ -370,7 +388,6 @@ namespace PoseidonSharp
                 }
                 results[i] = resultsSumModulus;
             }
-            return results;
         }        
     }
 }

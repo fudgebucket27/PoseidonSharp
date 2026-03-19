@@ -102,11 +102,12 @@ namespace PoseidonSharp
             return lhs == rhs;
         }
 
+        private static readonly Poseidon HashPublicPoseidon = new Poseidon(6, 6, 52, "poseidon", 5, _securityTarget: 128);
+
         private BigInteger HashPublic((Integer x, Integer y) r, (Integer x, Integer y) a, Integer m)
         {
             BigInteger[] inputs = { BigInteger.Parse(r.x.ToString()),BigInteger.Parse(r.y.ToString()), BigInteger.Parse(a.x.ToString()), BigInteger.Parse(a.y.ToString()), BigInteger.Parse(m.ToString()) };
-            Poseidon poseidon = new Poseidon(6, 6, 52, "poseidon", 5, _securityTarget: 128);
-            return poseidon.CalculatePoseidonHash(inputs);
+            return HashPublicPoseidon.CalculatePoseidonHash(inputs);
         }
 
         private Integer HashPrivateKey(Integer privateKey, Integer originalHash)

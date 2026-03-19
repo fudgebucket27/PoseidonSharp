@@ -138,20 +138,89 @@ public static class LoopringL2KeyGenerator
         return t;
     }
 
+    // Projective point for inversion-free arithmetic (X:Y:Z) where x=X/Z, y=Y/Z
+    private struct ProjPoint
+    {
+        public BigInteger X, Y, Z;
+    }
+
+    private static ProjPoint ProjAdd(ProjPoint p1, ProjPoint p2, BigInteger p)
+    {
+        BigInteger A = BigInteger.Remainder(p1.Z * p2.Z, p);
+        BigInteger B = BigInteger.Remainder(A * A, p);
+        BigInteger C = BigInteger.Remainder(p1.X * p2.X, p);
+        BigInteger D = BigInteger.Remainder(p1.Y * p2.Y, p);
+        BigInteger E = BigInteger.Remainder(JUBJUB_D_BIG * BigInteger.Remainder(C * D, p), p);
+        BigInteger F = B >= E ? B - E : p - E + B;
+        BigInteger G = Padd(B, E, p);
+        BigInteger sumXY1 = Padd(p1.X, p1.Y, p);
+        BigInteger sumXY2 = Padd(p2.X, p2.Y, p);
+        BigInteger H = Psub(Psub(BigInteger.Remainder(sumXY1 * sumXY2, p), C, p), D, p);
+        BigInteger aC = BigInteger.Remainder(JUBJUB_A_BIG * C, p);
+
+        return new ProjPoint
+        {
+            X = BigInteger.Remainder(BigInteger.Remainder(A * F, p) * H, p),
+            Y = BigInteger.Remainder(BigInteger.Remainder(A * G, p) * (D >= aC ? D - aC : p - aC + D), p),
+            Z = BigInteger.Remainder(F * G, p)
+        };
+    }
+
+    private static ProjPoint ProjDouble(ProjPoint p1, BigInteger p)
+    {
+        BigInteger A = BigInteger.Remainder(p1.X * p1.X, p);
+        BigInteger B = BigInteger.Remainder(p1.Y * p1.Y, p);
+        BigInteger zSq = BigInteger.Remainder(p1.Z * p1.Z, p);
+        BigInteger C = Padd(zSq, zSq, p);
+        BigInteger D = BigInteger.Remainder(JUBJUB_A_BIG * A, p);
+        BigInteger sum = Padd(p1.X, p1.Y, p);
+        BigInteger E = Psub(Psub(BigInteger.Remainder(sum * sum, p), A, p), B, p);
+        BigInteger G = Padd(D, B, p);
+        BigInteger F = G >= C ? G - C : p - C + G;
+        BigInteger H = D >= B ? D - B : p - B + D;
+
+        return new ProjPoint
+        {
+            X = BigInteger.Remainder(E * F, p),
+            Y = BigInteger.Remainder(G * H, p),
+            Z = BigInteger.Remainder(F * G, p)
+        };
+    }
+
     private static BigInteger[] mulPointEscalar(BigInteger[] tbase, BigInteger secretKey, BigInteger p)
     {
-        BigInteger[] res = new[] { BigInteger.Zero, BigInteger.One };
+        ProjPoint pt = new ProjPoint { X = tbase[0], Y = tbase[1], Z = BigInteger.One };
+        ProjPoint result = default;
+        bool resultIsIdentity = true;
         var rem = secretKey;
-        var exp = tbase;
 
         while (rem != 0)
         {
             if ((rem & BigInteger.One) == BigInteger.One)
-                res = addPoint(res, exp, p);
-            exp = addPoint(exp, exp, p);
+            {
+                if (resultIsIdentity)
+                {
+                    result = pt;
+                    resultIsIdentity = false;
+                }
+                else
+                {
+                    result = ProjAdd(result, pt, p);
+                }
+            }
+            pt = ProjDouble(pt, p);
             rem = rem >> 1;
         }
-        return res;
+
+        if (resultIsIdentity)
+            return new[] { BigInteger.Zero, BigInteger.One };
+
+        // Convert back to affine
+        BigInteger zInv = Pinv(result.Z, p);
+        return new[] {
+            BigInteger.Remainder(result.X * zInv, p),
+            BigInteger.Remainder(result.Y * zInv, p)
+        };
     }
 
     private static BigInteger rsh(BigInteger original, int order)
